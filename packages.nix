@@ -31,5 +31,6 @@ with pkgs;
     keyutils
     fuse
     glib
+    home-manager
   ]
 
