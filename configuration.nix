@@ -3,6 +3,9 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
+let
+  host = "curry";
+in
 {
   imports =
     [
@@ -10,8 +13,10 @@
       ./users.nix
       ./hosts.nix
       ./certificates.nix
-      # ./desktop.nix
     ];
+  require = [
+    (import ./desktop.nix { inherit pkgs host;})
+  ];
 
   environment.systemPackages = import ./packages.nix {inherit pkgs;};
 
@@ -50,7 +55,7 @@
   # Set your time zone.
   time.timeZone = "Europe/Oslo";
 
-  networking.hostName = "curry"; # Define your hostname.
+  networking.hostName = host; # Define your hostname.
   nixpkgs.config.allowUnfree = true;
 
   programs.fish.enable = true;

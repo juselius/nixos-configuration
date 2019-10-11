@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ host, pkgs, ... }:
 let
   e1000e = pkgs.linuxPackages.callPackage ./e1000e.nix {};
-  curry = if networking.hostName == "curry" then
+  curry = if host == "curry" then
     {
       nixpkgs.overlays = [
         (self: super: {
