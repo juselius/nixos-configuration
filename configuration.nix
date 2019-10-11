@@ -26,8 +26,7 @@ in
     initrd.checkJournalingFS = false;
   };
 
-  programs.vim.defaultEditor = true;
-
+  # virtualisation.vmware.guest.enable = true;
   virtualisation.docker.enable = true;
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.extraOptions = "--insecure-registry 10.0.0.0/8";
@@ -56,19 +55,12 @@ in
   time.timeZone = "Europe/Oslo";
 
   networking.hostName = host; # Define your hostname.
-  nixpkgs.config.allowUnfree = true;
 
+  programs.vim.defaultEditor = true;
   programs.fish.enable = true;
   programs.tmux.enable = true;
 
   services.openssh.enable = true;
-
-  services.keybase.enable = true;
-  services.kbfs = {
-    enable = true;
-    extraFlags = [ "-label kbfs" ];
-    mountPoint = "%h/keybase";
-  };
   services.gvfs.enable = true;
 
   users.extraUsers.root.openssh.authorizedKeys.keys = [
@@ -92,4 +84,6 @@ in
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "19.03";
   # system.autoUpgrade.enable = true;
+  nixpkgs.config.allowUnfree = true;
+
 }
