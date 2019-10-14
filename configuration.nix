@@ -5,6 +5,8 @@
 { config, pkgs, ... }:
 let
   host = "curry";
+  desktop = true;
+  thinkcentre = true;
 in
 {
   imports =
@@ -15,12 +17,29 @@ in
       ./certificates.nix
     ];
   require = [
-    (import ./desktop.nix { inherit pkgs host;})
+    (if thinkcentre then
+    let
+      e1000e = pkgs.linuxPackages.callPackage ./e1000e.nix {};
+    in
+    {
+      nixpkgs.overlays = [
+        (self: super: {
+          linuxPackages = super.linuxPackages // { inherit e1000e; };
+        })
+      ];
+
+      boot = {
+        extraModulePackages = [ pkgs.linuxPackages.e1000e ];
+        #kernelPackages = pkgs.linuxPackages_5_2;
+      };
+    } else {})
+    (if desktop then import ./desktop.nix { inherit pkgs host;} else {})
   ];
 
   environment.systemPackages = import ./packages.nix {inherit pkgs;};
 
-  boot = {
+  boot =
+  {
     loader.systemd-boot.enable = true;
     cleanTmpDir = true;
     initrd.checkJournalingFS = false;

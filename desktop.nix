@@ -1,26 +1,5 @@
 { host, pkgs, ... }:
 let
-  e1000e = pkgs.linuxPackages.callPackage ./e1000e.nix {};
-  curry = if host == "curry" then
-    {
-      nixpkgs.overlays = [
-        (self: super: {
-          linuxPackages = super.linuxPackages // { inherit e1000e; };
-        })
-      ];
-
-      boot = {
-        extraModulePackages = [ pkgs.linuxPackages.e1000e ];
-        #kernelPackages = pkgs.linuxPackages_5_2;
-      };
-
-      powerManagement = {
-        enable = false;
-        cpuFreqGovernor = "ondemand";
-      };
-      virtualisation.libvirtd.enable = true;
-    }
-    else {};
 in
 {
   hardware.bluetooth.enable = true;
@@ -32,6 +11,13 @@ in
       load-module module-bluetooth-discover
     ";
   };
+
+  powerManagement = {
+    enable = false;
+    cpuFreqGovernor = "ondemand";
+  };
+
+  virtualisation.libvirtd.enable = true;
 
   programs.dconf.enable = true;
 
