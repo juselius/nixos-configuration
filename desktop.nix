@@ -59,4 +59,4 @@ in
     dejavu_fonts
     powerline-fonts
   ];
-} // curry
+}
