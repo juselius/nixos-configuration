@@ -4,9 +4,9 @@
 
 { config, pkgs, ... }:
 let
-  host = "curry";
-  desktop = true;
-  thinkcentre = true;
+  host = "";
+  desktop = false;
+  thinkcentre = false;
 in
 {
   imports =
@@ -16,6 +16,7 @@ in
       ./hosts.nix
       ./certificates.nix
     ];
+
   require = [
     (if thinkcentre then
     let
@@ -73,8 +74,6 @@ in
   # Set your time zone.
   time.timeZone = "Europe/Oslo";
 
-  networking.hostName = host; # Define your hostname.
-
   programs.vim.defaultEditor = true;
   programs.fish.enable = true;
   programs.tmux.enable = true;
@@ -106,3 +105,5 @@ in
   nixpkgs.config.allowUnfree = true;
 
 }
+// (if host != "" then { networking.hostName = host; } else {})
+
