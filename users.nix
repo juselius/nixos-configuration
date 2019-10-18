@@ -19,6 +19,7 @@
        "fuse"
        "wireshark"
        "libvirtd"
+       "networkmanager"
      ];
      uid = 1000;
      isNormalUser = true;
