@@ -25,9 +25,8 @@ in
     ];
 
   require = [
-    thinkcentre
     (if desktop then import ./desktop.nix { inherit pkgs host; } else {})
-    (import ./itpartner.nix { inherit pkgs host;})
+    thinkcentre
   ];
 
   environment.systemPackages = import ./packages.nix {inherit pkgs;};
