@@ -22,10 +22,6 @@ in
   programs.dconf.enable = true;
 
   services.dbus.enable = true;
-  services.dnsmasq.enable = true;
-  services.dnsmasq.servers = [
-    "/cluster.local/127.0.0.1#4053"
-  ];
   services.keybase.enable = true;
   services.kbfs = {
     enable = true;
