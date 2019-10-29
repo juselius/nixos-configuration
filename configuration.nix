@@ -8,7 +8,12 @@ let
   desktop = true;
   uefi = true;
   bootdisk = "/dev/sda";
-  thinkcentre = false;
+  thinkcentre =
+    if false then
+      with pkgs;
+      let kernel = config.system.build.kernel; in
+      import ./thinkcentre.nix { inherit pkgs stdenv fetchurl kernel; }
+    else {};
 in
 {
   imports =
@@ -20,29 +25,14 @@ in
     ];
 
   require = [
-    (if thinkcentre then
-    let
-      e1000e = pkgs.linuxPackages.callPackage ./e1000e.nix {};
-    in
-    {
-      nixpkgs.overlays = [
-        (self: super: {
-          linuxPackages = super.linuxPackages // { inherit e1000e; };
-        })
-      ];
-
-      boot = {
-        extraModulePackages = [ pkgs.linuxPackages.e1000e ];
-        #kernelPackages = pkgs.linuxPackages_5_2;
-      };
-    } else {})
-    (if desktop then import ./desktop.nix { inherit pkgs host;} else {})
+    thinkcentre
+    (if desktop then import ./desktop.nix { inherit pkgs host; } else {})
+    (import ./itpartner.nix { inherit pkgs host;})
   ];
 
   environment.systemPackages = import ./packages.nix {inherit pkgs;};
 
-  boot =
-  {
+  boot = {
     loader.systemd-boot.enable = uefi;
     loader.grub = {
       enable = ! uefi;
