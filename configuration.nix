@@ -5,7 +5,9 @@
 { config, pkgs, ... }:
 let
   host = "";
-  desktop = false;
+  desktop = true;
+  uefi = true;
+  bootdisk = "/dev/sda";
   thinkcentre = false;
 in
 {
@@ -41,7 +43,12 @@ in
 
   boot =
   {
-    loader.systemd-boot.enable = true;
+    loader.systemd-boot.enable = uefi;
+    loader.grub = {
+      enable = ! uefi;
+      version = 2;
+      device = bootdisk;
+    };
     cleanTmpDir = true;
     initrd.checkJournalingFS = false;
   };
