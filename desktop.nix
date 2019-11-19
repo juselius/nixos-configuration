@@ -45,6 +45,7 @@ in
   services.upower.enable = true;
 
   fonts.fonts = with pkgs; [
+    font-awesome
     caladea
     carlito
     cantarell-fonts
@@ -52,7 +53,15 @@ in
     liberation_ttf
     fira
     fira-mono
+    fira-code
+    fira-code-symbols
     dejavu_fonts
     powerline-fonts
+    unifont
+    siji
+    tamsyn
+    noto-fonts
+    noto-fonts-emoji
+    material-icons
   ];
 }
