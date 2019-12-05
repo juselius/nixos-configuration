@@ -19,6 +19,7 @@ in
   imports =
     [
       ./hardware-configuration.nix
+      ./cachix.nix
       ./users.nix
       ./hosts.nix
       ./certificates.nix
@@ -30,6 +31,20 @@ in
   ];
 
   environment.systemPackages = import ./packages.nix {inherit pkgs;};
+  nixpkgs.overlays = [
+    (self: super: {
+      # open-vm-tools = super.open-vm-tools.overrideAttrs (old: rec {
+      #   NIX_CFLAGS_COMPILE = [ "-DGLIB_DISABLE_DEPRECATION_WARNINGS" ];
+      #   version = "10.3.5";
+      #   src = pkgs.fetchFromGitHub {
+      #     owner = "vmware";
+      #     repo = "open-vm-tools";
+      #     rev = "stable-${version}";
+      #     sha256 = "10x24gkqcg9lnfxghq92nr76h40s5v3xrv0ymi9c7aqrqry404z7";
+      #   };
+      # });
+    })
+  ];
 
   boot = {
     loader.systemd-boot.enable = uefi;
@@ -42,7 +57,7 @@ in
     initrd.checkJournalingFS = false;
   };
 
-  # virtualisation.vmware.guest.enable = true;
+  virtualisation.vmware.guest.enable = true;
   virtualisation.docker.enable = true;
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.extraOptions = "--insecure-registry 10.0.0.0/8";
