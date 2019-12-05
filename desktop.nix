@@ -38,9 +38,7 @@ in
   services.xserver.xkbVariant = "altgr-intl";
   services.xserver.xkbOptions = "eurosign:e";
 
-  services.xserver.displayManager.slim.enable = true;
-  services.xserver.displayManager.slim.defaultUser = "jonas";
-  services.xserver.displayManager.job.logToFile = true;
+  services.xserver.displayManager.gdm.enable = true;
 
   services.upower.enable = true;
 

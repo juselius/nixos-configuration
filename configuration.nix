@@ -4,17 +4,9 @@
 
 { config, pkgs, ... }:
 let
-  host = "";
-  desktop = true;
-  uefi = true;
-  bootdisk = "/dev/sda";
-  thinkcentre =
-    if false then
-      with pkgs;
-      let kernel = config.system.build.kernel; in
-      import ./thinkcentre.nix { inherit pkgs stdenv fetchurl kernel; }
-    else {};
+  options = import ./options.nix { inherit pkgs config; };
 in
+with options;
 {
   imports =
     [
