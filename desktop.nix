@@ -1,4 +1,4 @@
-{ host, pkgs, ... }:
+{ hostName, pkgs, ... }:
 let
 in
 {
@@ -16,8 +16,6 @@ in
     enable = false;
     cpuFreqGovernor = "ondemand";
   };
-
-  virtualisation.libvirtd.enable = true;
 
   programs.dconf.enable = true;
 

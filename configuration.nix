@@ -5,8 +5,8 @@
 { config, pkgs, ... }:
 let
   options = import ./options.nix { inherit pkgs config; };
+  hostName = options.hostName;
 in
-with options;
 {
   imports =
     [
@@ -18,8 +18,9 @@ with options;
     ];
 
   require = [
-    (if desktop then import ./desktop.nix { inherit pkgs host; } else {})
-    thinkcentre
+    options.kernelExtras
+    (if options.desktop then import ./desktop.nix { inherit pkgs hostName; } else {})
+    (if options.private then import ./private.nix { inherit pkgs hostName; } else {})
   ];
 
   environment.systemPackages = import ./packages.nix {inherit pkgs;};
@@ -39,20 +40,23 @@ with options;
   ];
 
   boot = {
-    loader.systemd-boot.enable = uefi;
+    loader.systemd-boot.enable = options.uefi;
     loader.grub = {
-      enable = ! uefi;
+      enable = ! options.uefi;
       version = 2;
-      device = bootdisk;
+      device = options.bootdisk;
     };
     cleanTmpDir = true;
     initrd.checkJournalingFS = false;
+    # kernelPackages = pkgs.linuxPackages_5_3;
   };
 
-  virtualisation.vmware.guest.enable = true;
   virtualisation.docker.enable = true;
   virtualisation.docker.autoPrune.enable = true;
   virtualisation.docker.extraOptions = "--insecure-registry 10.0.0.0/8";
+  virtualisation.vmware.guest.enable = (if options.virtualization == "vmware-guest" then true else false);
+  virtualisation.virtualbox.guest.enable = (if options.virtualization == "virtualbox-guest" then true else false);
+  virtualisation.libvirtd.enable = (if options.virtualization == "libvirt" then true else false);
 
   networking = {
     networkmanager = {
@@ -64,7 +68,7 @@ with options;
     # Networking for containers
     nat.enable = true;
     nat.internalInterfaces = ["veth+"];
-    nat.externalInterface = "eno2";
+    nat.externalInterface = options.eth;
   };
 
   # Select internationalisation properties.
@@ -76,6 +80,8 @@ with options;
 
   # Set your time zone.
   time.timeZone = "Europe/Oslo";
+
+  networking.hostName = hostName; # Define your hostname.
 
   programs.vim.defaultEditor = true;
   programs.fish.enable = true;
