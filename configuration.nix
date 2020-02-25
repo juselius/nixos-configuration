@@ -69,7 +69,12 @@ in
      font = "Lat2-Terminus16";
      keyMap = "us";
   };
-  i18n.defaultLocale = "en_US.UTF-8";
+  i18n = {
+    defaultLocale = "en_US.UTF-8";
+    extraLocaleSettings = {
+      LC_TIME = "en_DK.UTF-8";
+    };
+  };
 
   # Set your time zone.
   time.timeZone = "Europe/Oslo";
