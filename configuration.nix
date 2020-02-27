@@ -6,6 +6,12 @@
 let
   options = import ./options.nix { inherit pkgs config; };
   hostName = options.hostName;
+  kernelExtras =
+    if options.kernelExtras then
+      with pkgs;
+      let kernel = config.system.build.kernel; in
+      import ./kernel.nix { inherit pkgs stdenv fetchurl kernel; }
+    else {};
 in
 {
   imports =
@@ -18,7 +24,7 @@ in
     ];
 
   require = [
-    options.kernelExtras
+    kernelExtras
     (if options.desktop then import ./desktop.nix { inherit pkgs hostName; } else {})
     (if options.lan then import ./lan.nix { inherit pkgs hostName; } else {})
   ];
