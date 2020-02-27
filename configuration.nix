@@ -20,7 +20,7 @@ in
   require = [
     options.kernelExtras
     (if options.desktop then import ./desktop.nix { inherit pkgs hostName; } else {})
-    (if options.private then import ./private.nix { inherit pkgs hostName; } else {})
+    (if options.lan then import ./lan.nix { inherit pkgs hostName; } else {})
   ];
 
   environment.systemPackages = import ./packages.nix {inherit pkgs;};

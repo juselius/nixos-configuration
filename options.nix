@@ -2,7 +2,7 @@
 {
   hostName = "";
   desktop = true;
-  private = true;
+  lan = false;
   uefi = true;
   bootdisk = "/dev/sda";
   eth="eno2";
