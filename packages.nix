@@ -27,6 +27,7 @@ with pkgs;
     gnupg
     nixos-container
     nix-prefetch-git
+    cachix
     cifs-utils
     keyutils
     fuse
