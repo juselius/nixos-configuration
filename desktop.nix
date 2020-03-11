@@ -37,6 +37,7 @@ in
   services.xserver.xkbOptions = "eurosign:e";
 
   services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.xterm.enable = true;
 
   services.upower.enable = true;
 
