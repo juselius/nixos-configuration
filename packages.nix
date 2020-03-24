@@ -33,5 +33,6 @@ with pkgs;
     fuse
     glib
     home-manager
+    dhcp
   ]
 
