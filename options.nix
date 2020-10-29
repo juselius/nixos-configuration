@@ -102,11 +102,10 @@ in
     };
 
     virtualisation = {
-      guest.enable = mkEnableOption "Enable guest mode for virtualization";
       guest.vmware = mkEnableOption "Enable vmware guest";
       guest.hyperv = mkEnableOption "Enable hyperv guest";
-      libvirt.enable = mkEnableOption "Enable libvirt";
-      docker.enable = mkEnableOption "Enable docker";
+      libvirt = mkEnableOption "Enable libvirt";
+      docker = mkEnableOption "Enable docker";
     };
 
     kernelExtras = mkEnableOption "Include kernel configs in ./kernel.nix";
@@ -121,13 +120,13 @@ in
 
     (mkIf cfg.kernelExtras kernelExtras)
 
-    (mkIf cfg.virtualisation.docker.enable docker)
+    (mkIf cfg.virtualisation.docker docker)
 
-    # (mkIf cfg.virtualisation.guest.enable (mkMerge [
-    #     mkIf cfg.virtualisation.guest.vmware vmwareGuest
-    #     mkIf cfg.virtualisation.guest.hyperv hypervGuest
-    #   ])
-    # )
+    (mkIf cfg.virtualisation.libvirt libvirt)
+
+    (mkIf cfg.virtualisation.guest.vmware vmwareGuest)
+
+    (mkIf cfg.virtualisation.guest.hyperv hypervGuest)
 
   ];
 }
