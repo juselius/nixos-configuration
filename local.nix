@@ -22,8 +22,8 @@
     externalInterface = "eth0";
 
     virtualisation = {
-      docker.enable = true;
-      libvirt.enable = false;
+      docker = true;
+      libvirt = false;
     };
 
     lan = {
