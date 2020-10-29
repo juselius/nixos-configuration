@@ -1,4 +1,4 @@
-{ hostName, pkgs, ... }:
+{ pkgs, cfg, ... }:
 let
 in
 {
@@ -37,7 +37,9 @@ in
   services.xserver.xkbOptions = "eurosign:e";
 
   services.xserver.displayManager.gdm.enable = true;
+  services.xserver.displayManager.job.logToFile = true;
   services.xserver.desktopManager.xterm.enable = true;
+  services.xserver.wacom.enable = true;
 
   services.upower.enable = true;
 

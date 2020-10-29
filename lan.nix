@@ -1,12 +1,20 @@
-{ hostName, pkgs, ... }:
+{ pkgs, config, ... }:
+let
+  cfg = config.local;
+in
 {
-  networking.search = [];
+  services.cntlm.netbios_hostname = config.networking.hostName;
+
+  services.samba = {
+    enable = true;
+    enableNmbd = true;
+    nsswins = true;
+    extraConfig = cfg.lan.samba.extraConfig;
+  };
 
   services.dnsmasq = {
     enable = true;
-    extraConfig = ''
-      address=/.local/10.0.0.1
-    '';
+    extraConfig = cfg.lan.dnsmasq.extraConfig;
   };
 
   networking.firewall = {
@@ -14,33 +22,13 @@
     allowedUDPPorts = [ 137 138 ];
   };
 
-  services.cntlm.netbios_hostname = hostName;
-  services.samba = {
-    enable = false;
-    enableNmbd = true;
-    nsswins = true;
-    extraConfig = ''
-      netbios name = ${hostName}
-      workgroup = WORKGROUP
-      # add machine script = /run/current-system/sw/bin/useradd -d /var/empty -g 65534 -s /run/current-system/sw/bin/false -M %u
-    '';
-  };
-
   krb5 = {
-    enable = true;
+    enable = false;
     libdefaults = {
-      default_realm = "WORKGROUP";
+      default_realm = cfg.lan.krb5.default_realm;
     };
-    domain_realm = {
-      "local" = "WORKGROUP";
-      ".local" = "WORKGROUP";
-    };
-    realms = {
-        "WORKGROUP.INTERN" = {
-          admin_server = "dc1.local";
-          kdc = "dc1.local";
-        };
-    };
+    domain_realm = cfg.lan.krb5.domain_realm;
+    realms = cfg.lan.krb5.realms;
   };
 
   # Ugly hack because of hard coded kernel path

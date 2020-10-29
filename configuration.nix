@@ -4,65 +4,23 @@
 
 { config, pkgs, ... }:
 let
-  options = import ./options.nix { inherit pkgs config; };
-  hostName = options.hostName;
-  kernelExtras =
-    if options.kernelExtras then
-      with pkgs;
-      let kernel = config.system.build.kernel; in
-      import ./kernel.nix { inherit pkgs stdenv fetchurl kernel; }
-    else {};
+  cfg = config.local;
 in
 {
   imports =
     [
-      ./hardware-configuration.nix
+      ./options.nix
+      ./local.nix
       ./cachix.nix
       ./users.nix
       ./hosts.nix
       ./certificates.nix
+      ./hardware-configuration.nix
     ];
 
-  require = [
-    kernelExtras
-    (if options.desktop then import ./desktop.nix { inherit pkgs hostName; } else {})
-    (if options.lan then import ./lan.nix { inherit pkgs hostName; } else {})
-  ];
+  environment.systemPackages = import ./packages.nix {inherit pkgs cfg;};
 
-  environment.systemPackages = import ./packages.nix {inherit pkgs;};
-  nixpkgs.overlays = [
-    (self: super: {
-      # open-vm-tools = super.open-vm-tools.overrideAttrs (old: rec {
-      #   NIX_CFLAGS_COMPILE = [ "-DGLIB_DISABLE_DEPRECATION_WARNINGS" ];
-      #   version = "10.3.5";
-      #   src = pkgs.fetchFromGitHub {
-      #     owner = "vmware";
-      #     repo = "open-vm-tools";
-      #     rev = "stable-${version}";
-      #     sha256 = "10x24gkqcg9lnfxghq92nr76h40s5v3xrv0ymi9c7aqrqry404z7";
-      #   };
-      # });
-    })
-  ];
-
-  boot = {
-    loader.systemd-boot.enable = options.uefi;
-    loader.grub = {
-      enable = ! options.uefi;
-      version = 2;
-      device = options.bootdisk;
-    };
-    cleanTmpDir = true;
-    initrd.checkJournalingFS = false;
-    # kernelPackages = pkgs.linuxPackages_5_3;
-  };
-
-  virtualisation.docker.enable = true;
-  virtualisation.docker.autoPrune.enable = true;
-  virtualisation.docker.extraOptions = "--insecure-registry 10.0.0.0/8";
-  virtualisation.vmware.guest.enable = (if options.virtualization == "vmware-guest" then true else false);
-  virtualisation.virtualbox.guest.enable = (if options.virtualization == "virtualbox-guest" then true else false);
-  virtualisation.libvirtd.enable = (if options.virtualization == "libvirt" then true else false);
+  nixpkgs.overlays = [];
 
   networking = {
     networkmanager = {
@@ -70,11 +28,6 @@ in
        unmanaged = [ "interface-name:veth*" "interface-name:docker*" ];
     };
     firewall.trustedInterfaces = [ "docker0" "cbr0" "veth+" ];
-
-    # Networking for containers
-    nat.enable = true;
-    nat.internalInterfaces = ["veth+"];
-    nat.externalInterface = options.eth;
   };
 
   # Select internationalisation properties.
@@ -92,8 +45,6 @@ in
   # Set your time zone.
   time.timeZone = "Europe/Oslo";
 
-  networking.hostName = hostName; # Define your hostname.
-
   programs.vim.defaultEditor = true;
   programs.fish.enable = true;
   programs.tmux.enable = true;
@@ -101,9 +52,7 @@ in
   services.openssh.enable = true;
   services.gvfs.enable = true;
 
-  users.extraUsers.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKiAS30ZO+wgfAqDE9Y7VhRunn2QszPHA5voUwo+fGOf jonas"
-  ];
+  services.fwupd.enable = true;
 
   security.sudo.extraConfig =
     ''
@@ -120,8 +69,7 @@ in
   # security.pam.enableEcryptfs = true;
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "19.03";
+  system.stateVersion = "20.09";
   # system.autoUpgrade.enable = true;
   nixpkgs.config.allowUnfree = true;
-
 }
