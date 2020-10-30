@@ -1,6 +1,6 @@
 { pkgs, config, ... }:
 let
-  cfg = config.local;
+  cfg = config.customize;
 in
 {
   services.cntlm.netbios_hostname = config.networking.hostName;

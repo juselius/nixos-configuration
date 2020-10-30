@@ -1,7 +1,7 @@
 { pkgs, lib, config, ...}:
 with lib;
 let
-  cfg = config.local;
+  cfg = config.customize;
 
   hostName = config.networking.hostName;
 
@@ -45,7 +45,7 @@ let
   };
 in
 {
-  options.local = {
+  options.customize = {
     desktop.enable = mkEnableOption "Enable desktop configs";
 
     lan = {

@@ -4,13 +4,13 @@
 
 { config, pkgs, ... }:
 let
-  cfg = config.local;
+  cfg = config.customize;
 in
 {
   imports =
     [
       ./options.nix
-      ./local.nix
+      ./customize.nix
       ./cachix.nix
       ./users.nix
       ./hosts.nix
