@@ -33,9 +33,9 @@ let
 
   boot = {
     boot = {
-      loader.systemd-boot.enable = ! cfg.boot.bios;
+      loader.systemd-boot.enable = cfg.boot.uefi;
       loader.grub = {
-        enable = cfg.boot.bios;
+        enable = ! cfg.boot.uefi;
         version = 2;
         device = cfg.boot.device;
       };
@@ -89,7 +89,12 @@ in
       };
     };
 
-    boot.bios = mkEnableOption "Enable BIOS boot";
+    boot.uefi = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Enable UEFI boot";
+    };
+
     boot.device = mkOption {
       type = types.str;
       default = "/dev/sda";
