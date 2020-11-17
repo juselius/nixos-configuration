@@ -1,58 +1,61 @@
 { pkgs, config, ...}:
 {
 
-  # networking = {
-  #   hostName = "nixos";
-  #   domain = "local";
-  #   search = [ "local" ];
-  # };
+  networking = {
+    hostName = "nixos";
+    domain = "local";
+    search = [ "local" ];
+  };
 
-  # users.extraUsers.root.openssh.authorizedKeys.keys = [];
+  users.extraUsers.root.openssh.authorizedKeys.keys = [];
 
-  # customize = {
-  #   desktop.enable = false;
+  customize = {
+    desktop.enable = false;
 
-  #   boot = {
-  #     bios = false;
-  #     device = "/dev/sda";
-  #   };
+    boot = {
+      uefi = true;
+      device = "/dev/sda";
+    };
 
-  #   kernelExtras = false;
+    kernelExtras = false;
 
-  #   externalInterface = "eth0";
+    externalInterface = "eno2";
 
-  #   virtualisation = {
-  #     docker = true;
-  #     libvirt = false;
-  #   };
+    virtualisation = {
+      docker = true;
+      libvirt = false;
+    };
 
-  #   lan = {
-  #     enable = false;
+    lan = {
+      enable = false;
 
-  #     samba.extraConfig = ''
-  #       netbios name = ${config.networking.hostName}
-  #       workgroup = WORKGROUP
-  #       # add machine script = /run/current-system/sw/bin/useradd -d /var/empty -g 65534 -s /run/current-system/sw/bin/false -M %u
-  #     '';
+      samba.extraConfig = ''
+        netbios name = ${config.networking.hostName}
+        workgroup = WORKGROUP
+        # add machine script = /run/current-system/sw/bin/useradd -d /var/empty -g 65534 -s /run/current-system/sw/bin/false -M %u
+      '';
 
-  #     dnsmasq.extraConfig = ''
-  #       address=/.test.local/10.0.0.1
-  #     '';
+      dnsmasq.extraConfig = ''
+        address=/.test.local/10.0.0.1
+      '';
 
-  #     krb5.default_realm = "LOCAL";
+      krb5 = {
+	enable = false;
+	default_realm = "LOCAL";
 
-  #     krb5.domain_realm = {
-  #       "local" = "LOCAL";
-  #       ".local" = "LOCAL";
-  #     };
+        domain_realm = {
+          "local" = "LOCAL";
+          ".local" = "LOCAL";
+        };
 
-  #     krb5.realms = {
-  #       "LOCAL" = {
-  #         admin_server = "dc.local";
-  #         kdc = "dc.local";
-  #       };
-  #     };
-  #   };
-  # };
+        realms = {
+          "LOCAL" = {
+            admin_server = "dc.local";
+            kdc = "dc.local";
+          };
+        };
+      };
+    };
+  };
 }
 
