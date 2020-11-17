@@ -72,18 +72,20 @@ in
       };
 
       krb5 = {
+        enable = mkEnableOption "Enable Kerberos";
+
         default_realm = mkOption {
           type = types.str;
           default = "";
         };
 
         domain_realm = mkOption {
-          type = types.set;
+          type = types.attrs;
           default = {};
         };
 
         realms = mkOption {
-          type = types.set;
+          type = types.attrs;
           default = {};
         };
       };

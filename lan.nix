@@ -23,7 +23,7 @@ in
   };
 
   krb5 = {
-    enable = false;
+    enable = cfg.lan.krb5.enable;
     libdefaults = {
       default_realm = cfg.lan.krb5.default_realm;
     };
@@ -38,6 +38,8 @@ in
       fi
       ln -sfn /run/current-system/sw/bin/request-key /sbin/request-key
   '';
+
+  environment.systemPackages = [ pkgs.krb5 ];
 
   # request-key expects a configuration file under /etc
   environment.etc."request-key.conf" = {
