@@ -33,5 +33,5 @@ with pkgs;
     fuse
     glib
     home-manager
+    rdma-core
   ]
-

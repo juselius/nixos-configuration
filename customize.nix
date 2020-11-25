@@ -2,12 +2,13 @@
 {
 
   networking = {
-    hostName = "nixos";
-    domain = "local";
-    search = [ "local" ];
+    domain = "itpartner.intern";
+    search = [ "itpartner.intern" "itpartner.no" ];
   };
 
-  users.extraUsers.root.openssh.authorizedKeys.keys = [];
+  users.extraUsers.root.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKiAS30ZO+wgfAqDE9Y7VhRunn2QszPHA5voUwo+fGOf jonas-3"
+  ];
 
   customize = {
     desktop.enable = false;
@@ -19,43 +20,19 @@
 
     kernelExtras = false;
 
-    externalInterface = "eno2";
+    externalInterface = "eno1";
 
     virtualisation = {
       docker = true;
       libvirt = false;
     };
 
-    lan = {
-      enable = false;
+    lan.enable = false;
 
-      samba.extraConfig = ''
-        netbios name = ${config.networking.hostName}
-        workgroup = WORKGROUP
-        # add machine script = /run/current-system/sw/bin/useradd -d /var/empty -g 65534 -s /run/current-system/sw/bin/false -M %u
-      '';
-
-      dnsmasq.extraConfig = ''
-        address=/.test.local/10.0.0.1
-      '';
-
-      krb5 = {
-	enable = false;
-	default_realm = "LOCAL";
-
-        domain_realm = {
-          "local" = "LOCAL";
-          ".local" = "LOCAL";
-        };
-
-        realms = {
-          "LOCAL" = {
-            admin_server = "dc.local";
-            kdc = "dc.local";
-          };
-        };
-      };
-    };
+    dnsmasq.enable = true;
+    dnsmasq.extraConfig = ''
+      address=/.cluster.local/10.101.0.1
+    '';
   };
 }
 
