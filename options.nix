@@ -21,7 +21,9 @@ let
     networking = {
       nat.enable = true;
       nat.internalInterfaces = ["veth+"];
-      nat.externalInterface = cfg.externalInterface;
+      nat.externalInterface =
+        if cfg.externalInterface == null then []
+        else cfg.externalInterface;
     };
   };
 
@@ -103,9 +105,9 @@ in
     };
 
     externalInterface = mkOption {
-      type = types.str;
-      default = "eth0";
-      description = "External interface (for Docker primarily)";
+      type = types.nullOr types.str;
+      default = null;
+      description = "External interface (for Docker nat)";
     };
 
     virtualisation = {
