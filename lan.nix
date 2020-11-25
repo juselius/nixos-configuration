@@ -12,11 +12,6 @@ in
     extraConfig = cfg.lan.samba.extraConfig;
   };
 
-  services.dnsmasq = {
-    enable = true;
-    extraConfig = cfg.lan.dnsmasq.extraConfig;
-  };
-
   networking.firewall = {
     allowedTCPPorts = [ 139 445 ];
     allowedUDPPorts = [ 137 138 ];
