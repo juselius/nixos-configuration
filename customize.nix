@@ -7,6 +7,12 @@
     search = [ "local" ];
   };
 
+  services.dnsmasq.enable = false;
+
+  services.dnsmasq.extraConfig = ''
+      address=/.test.local/10.0.0.1
+  '';
+
   users.extraUsers.root.openssh.authorizedKeys.keys = [];
 
   customize = {
@@ -35,13 +41,9 @@
         # add machine script = /run/current-system/sw/bin/useradd -d /var/empty -g 65534 -s /run/current-system/sw/bin/false -M %u
       '';
 
-      dnsmasq.extraConfig = ''
-        address=/.test.local/10.0.0.1
-      '';
-
       krb5 = {
-	enable = false;
-	default_realm = "LOCAL";
+        enable = false;
+        default_realm = "LOCAL";
 
         domain_realm = {
           "local" = "LOCAL";
