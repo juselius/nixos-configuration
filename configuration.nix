@@ -16,7 +16,7 @@ in
       ./hosts.nix
       ./certificates.nix
       ./hardware-configuration.nix
-      ./cluster.nix
+      ./hpc.nix
     ];
 
   environment.systemPackages = import ./packages.nix {inherit pkgs cfg;};
