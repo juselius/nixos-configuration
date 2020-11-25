@@ -1,5 +1,5 @@
-{ pkgs, config, ... }:
-with pkgs;
+{ pkgs, lib, config, ... }:
+with lib;
 let
   cfg = config.customize.hpc;
 
@@ -12,7 +12,7 @@ let
 
     services.mysql = {
       enable = true;
-      package = mysql;
+      package = pkgs.mysql;
       ensureUsers = [
         {
           name = "slurm";
@@ -27,7 +27,7 @@ let
     };
 
     services.slurm = {
-      server.enable = cfg.slurm.enable;
+      server.enable = cfg.slurm.server;
       controlMachine = cfg.slurm.controlMachine;
       nodeName = cfg.slurm.nodeName;
 
@@ -44,7 +44,7 @@ let
     services.munge.enable = true;
 
     services.slurm = {
-      client.enable = true;
+      client.enable = cfg.slurm.client;
       controlMachine = cfg.slurm.controlMachine;
     };
   };
