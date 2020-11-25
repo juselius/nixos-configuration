@@ -45,13 +45,6 @@ let
       initrd.checkJournalingFS = false;
     };
   };
-
-  dnsmasq = {
-    services.dnsmasq = {
-      enable = true;
-      extraConfig = cfg.dnsmasq.extraConfig;
-    };
-  };
 in
 {
   options.customize = {
@@ -120,14 +113,6 @@ in
     };
 
     kernelExtras = mkEnableOption "Include kernel configs in ./kernel.nix";
-
-    dnsmasq.enable = mkEnableOption "Enable dnsmasq";
-
-    dnsmasq.extraConfig = mkOption {
-      type = types.str;
-      default = "";
-    };
-
   };
 
   config = mkMerge [
@@ -146,7 +131,5 @@ in
     (mkIf cfg.virtualisation.guest.vmware vmwareGuest)
 
     (mkIf cfg.virtualisation.guest.hyperv hypervGuest)
-
-    (mkIf cfg.dnsmasq.enable dnsmasq)
   ];
 }
