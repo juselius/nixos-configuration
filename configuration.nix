@@ -25,7 +25,7 @@ in
 
   networking = {
     networkmanager = {
-       enable = true;
+       enable = false;
        unmanaged = [ "interface-name:veth*" "interface-name:docker*" ];
     };
     firewall.trustedInterfaces = [ "docker0" "cbr0" "veth+" ];
@@ -54,6 +54,7 @@ in
   services.gvfs.enable = true;
 
   services.fwupd.enable = true;
+  services.ntp.enable = true;
 
   security.sudo.extraConfig =
     ''
