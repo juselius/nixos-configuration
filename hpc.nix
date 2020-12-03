@@ -4,53 +4,148 @@ let
   cfg = config.customize.hpc;
 
   common = {
+    services.beegfs7.enable = true;
+    services.beegfs7.beegfs = {
+      mds0-0 = {
+        mgmtdHost = "mds0-0";
+        connAuthFile = "";
+        client = {
+          enable = true;
+          mountPoint = "/work";
+        };
+      };
+    };
+
     programs.singularity.enable = true;
-  };
 
-  slurmServer = {
     services.munge.enable = true;
-
-    services.mysql = {
-      enable = true;
-      package = pkgs.mysql;
-      ensureUsers = [
-        {
-          name = "slurm";
-          ensurePermissions = {
-            "slurm_acct_db.*" = "ALL PRIVILEGES";
-          };
-        }
-      ];
-      initialDatabases = [
-        { name = "slurm_acct_db"; }
-      ];
+    environment.etc."munge/munge.key" = {
+        source = cfg.mungeKey;
+        mode = "0400";
+        uid = 997;
+        gid = 0;
     };
 
     services.slurm = {
-      server.enable = cfg.slurm.server;
       controlMachine = cfg.slurm.controlMachine;
       nodeName = cfg.slurm.nodeName;
-
       partitionName = cfg.slurm.partitionName;
-        dbdserver = {
-        enable = true;
-        dbdHost = cfg.slurm.controlMachine;
-        storagePass  = cfg.slurm.storagePass;
+      extraConfig = ''
+        AccountingStorageType=accounting_storage/filetxt
+        JobAcctGatherType=jobacct_gather/linux
+      '';
+    };
+
+    environment.systemPackages = [
+      ibutils
+      git
+      cmake
+      nco
+      neovim
+      python3
+      emacs
+      gfortran
+      openmpi
+    ];
+  };
+
+  prometheusServer = {
+    services.prometheus ={
+      enable = true;
+      scrapeConfigs = [
+        {
+          job_name = "chrysalis";
+          static_configs = [
+            {
+              targets = [
+                "127.0.0.1:${toString config.services.prometheus.exporters.node.port}"
+              ];
+            }
+          ];
+        }
+      ];
+    };
+
+    services.grafana = {
+      enable = true;
+      domain = "grafana.vortex.juselius.io";
+      port = 2342;
+      addr = "127.0.0.1";
+    };
+
+    # nginx reverse proxy
+    services.nginx = {
+      enable = true;
+      virtualHosts.${config.services.grafana.domain} = {
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:${toString config.services.grafana.port}";
+          proxyWebsockets = true;
+        };
       };
     };
   };
 
-  slurmClient = {
-    services.munge.enable = true;
-
-    services.slurm = {
-      client.enable = cfg.slurm.client;
-      controlMachine = cfg.slurm.controlMachine;
+  prometheusExporter = {
+    services.prometheus.exporters = {
+        node.enable = true;
+        node.enabledCollectors = [ "systemd" ];
     };
   };
+
+  slurmServer = {
+    # services.mysql = {
+    #   enable = true;
+    #   package = pkgs.mysql;
+    #   ensureUsers = [
+    #     {
+    #       name = "slurm";
+    #       ensurePermissions = {
+    #         "slurm_acct_db.*" = "ALL PRIVILEGES";
+    #       };
+    #     }
+    #   ];
+    #   initialDatabases = [
+    #     { name = "slurm_acct_db"; }
+    #   ];
+    # };
+
+    services.slurm = {
+      server.enable = cfg.slurm.server;
+      extraConfig = ''
+        MailDomain=itpartner.no
+        MailProg=${pkgs.ssmtp}/bin/ssmtp
+      '';
+      # dbdserver = {
+      #   enable = true;
+      #   dbdHost = cfg.slurm.controlMachine;
+      #   storagePass  = cfg.slurm.storagePass;
+      # };
+    };
+
+    services.ssmtp = {
+      enable = true;
+      useTLS = true;
+      hostName = "smtpgw.itpartner.no:465";
+      root = "jonas.juselius@tromso.serit.no";
+      domain = "itpartner.no";
+      authUser = "innovasjon";
+      authPassFile = "/run/keys/ssmtp-authpass";
+    };
+  };
+
+  slurmClient = {
+    services.slurm.client.enable = cfg.slurm.client;
+  };
+
+  ibutils = pkgs.callPackage ./ibutils.nix {};
 in
 {
   options.customize.hpc = {
+    mungeKey = mkOption {
+      type = types.path;
+      default = null;
+    };
+
     slurm = {
       controlMachine = mkOption {
         type = types.str;
@@ -82,6 +177,9 @@ in
         default = null;
       };
     };
+
+    prometheusServer = mkEnableOption "Enable Prometheus server";
+    prometheusExporter = mkEnableOption "Enable Prometheus node exporter";
   };
 
   config = mkMerge [
@@ -90,5 +188,15 @@ in
     (mkIf cfg.slurm.server slurmServer)
 
     (mkIf cfg.slurm.client slurmClient)
+
+    (mkIf cfg.prometheusServer prometheusServer)
+
+    (mkIf cfg.prometheusExporter prometheusExporter)
+  ];
+
+  imports = [
+    # ./beegfs/kernel-module.nix
+    # ./beegfs/beegfs.nix
+    ./beegfs/module.nix
   ];
 }
