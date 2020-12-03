@@ -34,4 +34,5 @@ with pkgs;
     glib
     home-manager
     rdma-core
-  ]
+    mailutils
+]
