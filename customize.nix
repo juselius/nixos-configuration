@@ -1,9 +1,9 @@
 { pkgs, config, ...}:
 {
   networking = {
-    hostName = "vortex";
-    domain = "itpartner.intern";
-    search = [ "itpartner.intern" "itpartner.no" ];
+    hostName = "stokes";
+    domain = "regnekraft.io";
+    search = [ "regnekraft.io" "itpartner.intern" "itpartner.no" ];
     firewall = {
       allowedTCPPorts = [ 80 443 6817 6818 6819 ];
       allowedUDPPorts = [ ];
@@ -28,13 +28,19 @@
     };
 
     lan.enable = false;
+  };
 
-    hpc.prometheusServer = true;
-    hpc.prometheusExporter = true;
+  hpc = {
+    prometheusServer = true;
+    # prometheusExporter = true;
+    monitoring.server.enable = true;
+    monitoring.server.scrapeHosts = [
+      "vortex"
+    ];
 
-    hpc.mungeKey = ./munge.key;
+    mungeKey = ./munge.key;
 
-    hpc.slurm = {
+    slurm = {
       server = true;
       controlMachine = "vortex";
       nodeName = [
@@ -44,7 +50,6 @@
       partitionName = [
         "batch Nodes=c0-[1-8],yoneda Default=YES MaxTime=INFINITE State=UP"
       ];
-      # storagePass  = "olj2jememd";
     };
   };
 

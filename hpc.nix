@@ -1,7 +1,7 @@
 { pkgs, lib, config, ... }:
 with lib;
 let
-  cfg = config.customize.hpc;
+  cfg = config.hpc;
 
   common = {
     services.beegfs7.enable = true;
@@ -36,7 +36,7 @@ let
       '';
     };
 
-    environment.systemPackages = [
+    environment.systemPackages = with pkgs; [
       ibutils
       git
       cmake
@@ -50,21 +50,23 @@ let
   };
 
   prometheusServer = {
-    services.prometheus ={
-      enable = true;
-      scrapeConfigs = [
-        {
-          job_name = "chrysalis";
-          static_configs = [
-            {
-              targets = [
-                "127.0.0.1:${toString config.services.prometheus.exporters.node.port}"
-              ];
-            }
-          ];
-        }
-      ];
-    };
+    # services.prometheus ={
+    #   enable = true;
+    #   scrapeConfigs = [
+    #     {
+    #       job_name = "chrysalis";
+    #       static_configs = [
+    #         {
+    #           targets = [
+    #             "127.0.0.1:${toString config.services.prometheus.exporters.node.port}"
+    #           ];
+    #         }
+    #       ];
+    #     }
+    #   ];
+    # };
+
+    # services.certmgr
 
     services.grafana = {
       enable = true;
@@ -74,23 +76,62 @@ let
     };
 
     # nginx reverse proxy
+    security.acme.acceptTerms = true;
+    security.acme.email = "innovasjon@itpartner.no";
     services.nginx = {
       enable = true;
-      virtualHosts.${config.services.grafana.domain} = {
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${toString config.services.grafana.port}";
-          proxyWebsockets = true;
-        };
+      statusPage = true;
+      virtualHosts = {
+        "acmechallenge.juselius.io" = {
+      # Catchall vhost, will redirect users to HTTPS for all vhosts
+      serverAliases = [ "*.juselius.io" ];
+      # /var/lib/acme/.challenges must be writable by the ACME user
+      # and readable by the Nginx user.
+      # By default, this is the case.
+      locations."/.well-known/acme-challenge" = {
+        root = "/var/lib/acme/.challenges";
+      };
+      locations."/" = {
+        return = "301 https://$host$request_uri";
+      };
+    };
+    ${config.services.grafana.domain} = {
+      # forceSSL = true;
+      # enableACME = true;
+      serverAliases = [];
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.grafana.port}";
+        proxyWebsockets = true;
+      };
+    };
+    "prometheus.vortex.juselius.io" = {
+    # forceSSL = true;
+    # enableACME = true;
+    serverAliases = [];
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:${toString config.services.prometheus.port}";
+      proxyWebsockets = true;
+      };
+      };
+      "alertmanager.vortex.juselius.io" = {
+      # forceSSL = true;
+      # enableACME = true;
+      serverAliases = [];
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.prometheus.alertmanager.port}";
+        proxyWebsockets = true;
       };
     };
   };
-
-  prometheusExporter = {
-    services.prometheus.exporters = {
-        node.enable = true;
-        node.enabledCollectors = [ "systemd" ];
-    };
+};
   };
+
+  # prometheusExporter = {
+  #   services.prometheus.exporters = {
+  #       node.enable = true;
+  #       node.enabledCollectors = [ "systemd" ];
+  #   };
+  # };
 
   slurmServer = {
     # services.mysql = {
@@ -140,7 +181,7 @@ let
   ibutils = pkgs.callPackage ./ibutils.nix {};
 in
 {
-  options.customize.hpc = {
+  options.hpc = {
     mungeKey = mkOption {
       type = types.path;
       default = null;
@@ -179,7 +220,7 @@ in
     };
 
     prometheusServer = mkEnableOption "Enable Prometheus server";
-    prometheusExporter = mkEnableOption "Enable Prometheus node exporter";
+    # prometheusExporter = mkEnableOption "Enable Prometheus node exporter";
   };
 
   config = mkMerge [
@@ -191,12 +232,11 @@ in
 
     (mkIf cfg.prometheusServer prometheusServer)
 
-    (mkIf cfg.prometheusExporter prometheusExporter)
+    # (mkIf cfg.prometheusExporter prometheusExporter)
   ];
 
   imports = [
-    # ./beegfs/kernel-module.nix
-    # ./beegfs/beegfs.nix
-    ./beegfs/module.nix
+    ./beegfs
+    ./monitoring
   ];
 }
