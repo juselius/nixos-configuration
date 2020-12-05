@@ -1,5 +1,17 @@
 { pkgs, config, ...}:
 {
+  # services.samba = {
+  #   enable = true;
+  #   shares = {
+  #     public = {
+  #       path = "/srv/public";
+  #       "read only" = true;
+  #       browseable = "yes";
+  #       "guest ok" = "yes";
+  #       comment = "Public samba share.";
+  #     };
+  #   };
+  # };
   networking = {
     hostName = "stokes";
     domain = "regnekraft.io";
