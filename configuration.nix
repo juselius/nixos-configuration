@@ -1,77 +1,84 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
-let
-  cfg = config.customize;
-in
+{ pkgs, config, ...}:
 {
-  imports =
-    [
-      ./options.nix
-      ./customize.nix
-      ./cachix.nix
-      ./users.nix
-      ./hosts.nix
-      ./certificates.nix
-      ./hardware-configuration.nix
-      ./hpc.nix
-    ];
-
-  environment.systemPackages = import ./packages.nix {inherit pkgs cfg;};
-
-  nixpkgs.overlays = [];
+  imports = [
+    ./modules
+    ./cachix.nix
+    ./users.nix
+    ./hosts.nix
+    ./kernel.nix
+    ./certificates.nix
+    ./hardware-configuration.nix
+  ];
 
   networking = {
-    networkmanager = {
-       enable = false;
-       unmanaged = [ "interface-name:veth*" "interface-name:docker*" ];
+    hostName = "stokes";
+    domain = "regnekraft.io";
+    search = [ "regnekraft.io" "itpartner.intern" "itpartner.no" ];
+  };
+
+  facility = {
+    desktop.enable = false;
+    lan.enable = false;
+
+    os = {
+      boot = {
+        uefi = true;
+        device = "/dev/sda";
+      };
+      externalInterface = "eno1";
     };
-    firewall.trustedInterfaces = [ "docker0" "cbr0" "veth+" ];
+
+    # hpc = {
+    #   prometheusServer = true;
+    #   # prometheusExporter = true;
+    #   monitoring.server.enable = true;
+    #   monitoring.server.scrapeHosts = [
+    #     "vortex"
+    #   ];
+
+    #   mungeKey = ./munge.key;
+
+    #   firewall = {
+    #     allowedTCPPorts = [ 80 443 6817 6818 6819 ];
+    #     allowedUDPPorts = [];
+    #   };
+
+    #   slurm = {
+    #     server = true;
+    #     controlMachine = "vortex";
+    #     nodeName = [
+    #       "c0-[1-8] CPUs=64 RealMemory=196000 TmpDisk=250000 State=UNKNOWN"
+    #       "yoneda  CPUs=12 Sockets=1 CoresPerSocket=6 ThreadsPerCore=2 RealMemory=8000 TmpDisk=1000 State=UNKNOWN"
+    #     ];
+    #     partitionName = [
+    #       "batch Nodes=c0-[1-8],yoneda Default=YES MaxTime=INFINITE State=UP"
+    #     ];
+    #   };
+    # };
+
   };
 
-  # Select internationalisation properties.
-  console = {
-     font = "Lat2-Terminus16";
-     keyMap = "us";
-  };
-  i18n = {
-    defaultLocale = "en_DK.UTF-8";
-    extraLocaleSettings = {
-      LC_TIME = "en_DK.UTF-8";
-    };
-  };
+  services.dnsmasq.enable = true;
+  services.dnsmasq.extraConfig = ''
+    address=/.cluster.local/10.101.0.1
+  '';
 
-  # Set your time zone.
-  time.timeZone = "Europe/Oslo";
+  users.extraUsers.root.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKiAS30ZO+wgfAqDE9Y7VhRunn2QszPHA5voUwo+fGOf jonas-3"
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDULdlLC8ZLu9qBZUYsjhpr6kv5RH4yPkekXQdD7prkqapyoptUkO1nOTDwy7ZsKDxmp9Zc6OtdhgoJbowhGW3VIZPmooWO8twcaYDpkxEBLUehY/n8SlAwBtiHJ4mTLLcynJMVrjmTQLF3FeWVof0Aqy6UtZceFpLp1eNkiHTCM3anwtb9+gfr91dX1YsAOqxqv7ooRDu5rCRUvOi4OvRowepyuBcCjeWpTkJHkC9WGxuESvDV3CySWkGC2fF2LHkAu6SFsFE39UA5ZHo0b1TK+AFqRFiBAb7ULmtuno1yxhpBxbozf8+Yyc7yLfMNCyBpL1ci7WnjKkghQv7yM1xN2XMJLpF56v0slSKMoAs7ThoIlmkRm/6o3NCChgu0pkpNg/YP6A3HfYiEDgChvA6rAHX6+to50L9xF3ajqk4BUzWd/sCk7Q5Op2lzj31L53Ryg8vMP8hjDjYcgEcCCsGOcjUVgcsmfC9LupwRIEz3aF14AWg66+3zAxVho8ozjes= jonas.juselius@juselius.io"
+  ];
 
-  programs.vim.defaultEditor = true;
-  programs.fish.enable = true;
-  programs.tmux.enable = true;
-
-  services.openssh.enable = true;
-  services.gvfs.enable = true;
-
-  services.fwupd.enable = true;
-  services.ntp.enable = true;
-
-  security.sudo.extraConfig =
-    ''
-      Defaults env_keep+=SSH_AUTH_SOCK
-      Defaults lecture=never
-      Defaults shell_noargs
-      root   ALL=(ALL) SETENV: ALL
-      %wheel ALL=(ALL) NOPASSWD: ALL, SETENV: ALL
-     '';
-
-  security.rtkit.enable = true;
-
-  # $ ecryptfs-migrate-home -u <username>
-  # security.pam.enableEcryptfs = true;
-
-  # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "20.09";
-  # system.autoUpgrade.enable = true;
-  nixpkgs.config.allowUnfree = true;
+  # services.samba = {
+  #   enable = true;
+  #   shares = {
+  #     public = {
+  #       path = "/srv/public";
+  #       "read only" = true;
+  #       browseable = "yes";
+  #       "guest ok" = "yes";
+  #       comment = "Public samba share.";
+  #     };
+  #   };
+  # };
 }
+

@@ -1,4 +1,4 @@
-{pkgs, stdenv, fetchurl, kernel, ...}:
+{pkgs, stdenv, fetchurl, kernel ? config.system.build.kernel, ...}:
 let
   e1000e =
     # assert stdenv.lib.versionOlder kernel.version "4.10";
@@ -35,16 +35,16 @@ let
         license = stdenv.lib.licenses.gpl2;
       };
     };
+
+  e1000Package = self: super: {
+    linuxPackages = super.linuxPackages // { inherit e1000e; };
+  };
 in
   {
-    nixpkgs.overlays = [
-      (self: super: {
-        # linuxPackages = super.linuxPackages // { inherit e1000e; };
-      })
-    ];
+    # nixpkgs.overlays = [ e1000Package ];
 
     boot = {
       # extraModulePackages = [ pkgs.linuxPackages.e1000e ];
-      #kernelPackages = pkgs.linuxPackages_5_2;
+      # kernelPackages = pkgs.linuxPackages_5_2;
     };
   }
