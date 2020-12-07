@@ -1,5 +1,6 @@
-{pkgs, stdenv, fetchurl, kernel ? config.system.build.kernel, ...}:
+{pkgs, stdenv, fetchurl, config, kernel ? null, ...}:
 let
+  kernel = if kernel == null then config.system.build.kernel else kernel;
   e1000e =
     # assert stdenv.lib.versionOlder kernel.version "4.10";
     stdenv.mkDerivation rec {
