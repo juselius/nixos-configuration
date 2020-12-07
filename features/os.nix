@@ -114,11 +114,19 @@ in
       default = [];
     };
 
+    extraConfig = mkOption {
+      type = types.attrs;
+      default = {};
+      description = "Inject any other system configuration";
+    };
+
   };
 
   config = mkMerge [
     configuration
 
     (mkIf cfg.docker.enable docker)
+
+    cfg.extraConfig
   ];
 }
