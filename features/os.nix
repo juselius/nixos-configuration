@@ -1,7 +1,7 @@
-
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
+with lib;
 let
-  cfg = config.feature.base;
+  cfg = config.features.os;
 
   configuration = {
     nixpkgs.overlays = [];
@@ -60,19 +60,6 @@ let
     system.autoUpgrade.enable = true;
     nixpkgs.config.allowUnfree = true;
 
-    docker = {
-      virtualisation.docker.enable = cfg.docker.enable;
-      virtualisation.docker.autoPrune.enable = true;
-      virtualisation.docker.extraOptions = "--insecure-registry 10.0.0.0/8";
-      networking = {
-        nat.enable = true;
-        nat.internalInterfaces = ["veth+"];
-        nat.externalInterface =
-          if cfg.externalInterface == null then []
-          else cfg.externalInterface;
-      };
-    };
-
     boot = {
       loader.systemd-boot.enable = cfg.boot.uefi;
       loader.grub = {
@@ -84,9 +71,22 @@ let
       initrd.checkJournalingFS = false;
     };
   };
+
+  docker = {
+    virtualisation.docker.enable = cfg.docker.enable;
+    virtualisation.docker.autoPrune.enable = true;
+    virtualisation.docker.extraOptions = "--insecure-registry 10.0.0.0/8";
+    networking = {
+      nat.enable = true;
+      nat.internalInterfaces = ["veth+"];
+      nat.externalInterface =
+        if cfg.externalInterface == null then []
+        else cfg.externalInterface;
+    };
+  };
 in
 {
-  options.feature.os = {
+  options.features.os = {
     networkmanager.enable = mkEnableOption "Enable NetworkManager";
 
     docker.enable = mkEnableOption "Enable Docker";
@@ -116,5 +116,9 @@ in
 
   };
 
-  config.base = mkMerge [ configuration ];
+  config = mkMerge [
+    configuration
+
+    (mkIf cfg.docker.enable docker)
+  ];
 }

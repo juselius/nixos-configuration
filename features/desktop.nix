@@ -1,6 +1,7 @@
-{ pkgs, cfg, ... }:
+{ pkgs, config, lib, ... }:
+with lib;
 let
-  cfg = config.feature.desktop;
+  cfg = config.features.desktop;
 
   configuration = {
     hardware.bluetooth.enable = true;
@@ -21,13 +22,6 @@ let
     programs.dconf.enable = true;
 
     services.dbus.enable = true;
-    services.keybase.enable = true;
-    services.kbfs = {
-      enable = true;
-      extraFlags = [ "-label kbfs" ];
-      mountPoint = "%h/keybase";
-    };
-
     services.printing.enable = true;
     services.printing.drivers = [ pkgs.hplip ];
 
@@ -65,13 +59,25 @@ let
       material-icons
     ];
   };
+
+  keybase = {
+    services.keybase.enable = true;
+    services.kbfs = {
+      enable = true;
+      extraFlags = [ "-label kbfs" ];
+      mountPoint = "%h/keybase";
+    };
+  };
+
 in
 {
-  options.feature.desktop = {
-    desktop.enable = mkEnableOption "Enable desktop configs";
+  options.features.desktop = {
+    enable = mkEnableOption "Enable desktop configs";
+    keybase.enable = mkEnableOption "Enable Keybase";
   };
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
+    (mkIf cfg.keybase.enable keybase)
   ];
 }

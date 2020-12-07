@@ -1,7 +1,7 @@
-{ pkgs, config, ... }:
-with pkgs;
+{ pkgs, config, lib, ... }:
+with lib;
 let
-  cfg = config.feature.nodeExporter;
+  cfg = config.features.nodeExporter;
 
   configuration = {
     services.prometheus.exporters = {
@@ -40,8 +40,8 @@ let
     };
   };
 in {
-  options.feature.nodeExporter = {
-    enable = mkenableOption "Enable Prometheus node exporter";
+  options.features.nodeExporter = {
+    enable = mkEnableOption "Enable Prometheus node exporter";
   };
 
   config = mkMerge [

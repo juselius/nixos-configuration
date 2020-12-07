@@ -1,12 +1,12 @@
-{ pkgs, config, ... }:
-with pkgs;
+{ pkgs, config, lib, ... }:
+with lib;
 let
-  cfg = config.feature.pki;
+  cfg = config.features.pki;
 
-  certName = attr: {
-    CN = "${attr.name}";
-    O = "${attr.o}";
-    OU = "${attr.name}.pki.caSpec";
+  certName = attrs: {
+    CN = "${attrs.name}";
+    O = "${attrs.o}";
+    OU = "${attrs.name}.pki.caSpec";
     L = "certmgr";
   };
 
@@ -16,15 +16,15 @@ let
         algo = cfg.algo;
         size = if cfg.algo == "ecdsa" then 256 else 2048;
       };
-      names = [ certName cfg ];
+      names = [ (certName cfg) ];
     }
   );
 
   # make ca derivation sha depend on initca cfssl output
   initca = pkgs.stdenv.mkDerivation {
-    inherit name;
+    name = cfg.name;
     src =
-      if cfg.ca != null then
+      if cfg.ca != ./. then
         cfg.ca
       else
         pkgs.runCommand "initca" { buildInputs = [ pkgs.cfssl ]; } ''
@@ -71,7 +71,7 @@ let
           algo = cfg.algo;
           size = if cfg.algo == "ecdsa" then 256 else 2048;
         };
-        names = [ certName args ];
+        names = [ (certName args) ];
         hosts = args.hosts;
       };
     in
@@ -92,21 +92,16 @@ let
           cfssljson -bare cert; \
           mkdir -p $out; cp *.pem $out
         '';
-      crt =
-        pkgs.runCommand "${cn}" {
-          buildInputs = [ pkgs.cfssl ];
-        } (cfssl conf);
     in
-    {
-      key = "${crt}/cert-key.pem";
-      cert = "${crt}/cert.pem";
-    };
+      pkgs.runCommand "${cn}" {
+        buildInputs = [ pkgs.cfssl ];
+      } (cfssl conf);
 
   certmgr = {
     services.certmgr = {
       enable = true;
       package = pkgs.certmgr-selfsigned;
-      svcManager = "systemd";
+      svcManager = "command";
       specs =
         let
           secret = name: "/var/lib/secrets/${name}.pem";
@@ -135,48 +130,49 @@ let
     };
   };
 
-  gencerts = {
-     x = mapAttrs gencert cfg.certs;
-  };
+  # gencerts = {
+  #    mapAttrs gencert cfg.certs;
+  # };
 
   configuration = {
     security.pki.certificateFiles = [ ca.cert ];
   };
 in {
-  options.feature.pki = {
+  options.features.pki = {
     enable = mkEnableOption "Enable default system packages";
 
     ca = mkOption {
       type = types.path;
-      default = null;
+      default = ./.;
       description = "Path to ca certificate to use as Root CA.";
     };
 
     algo = mkOption {
-      type = types.string;
+      type = types.str;
       default = "rsa";
     };
 
     name = mkOption {
-      type = types.string;
+      type = types.str;
       default = "ca";
     };
 
     o = mkOption {
-      type = types.string;
+      type = types.str;
       default = "NixOS";
     };
 
     certs = mkOption {
-      type =type.attrsOf type.attrs;
+      type = types.attrsOf types.attrs;
       default = {};
       example = { "example.local" = { hosts = []; }; };
     };
 
     certmgr = {
       enable = mkEnableOption "Enable certmgr";
+
       domain = mkOption {
-        type = types.string;
+        type = types.str;
         default = "local";
       };
     };
@@ -189,7 +185,7 @@ in {
 
     (mkIf (cfg.enable && cfg.certmgr.enable) certmgr)
 
-    (mkIf (cfg.enable && cfg.static.enable) gencerts)
+    # (mkIf (cfg.enable && cfg.static.enable) gencerts)
   ];
 }
 

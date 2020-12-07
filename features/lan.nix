@@ -1,6 +1,7 @@
-{ pkgs, config, ... }:
+{ pkgs, config, lib, ... }:
+with lib;
 let
-  cfg = config.feature.lan;
+  cfg = config.features.lan;
 
   configuration = {
     services.cntlm.netbios_hostname = config.networking.hostName;
@@ -9,7 +10,7 @@ let
       enable = true;
       enableNmbd = true;
       nsswins = true;
-      extraConfig = cfg.lan.samba.extraConfig;
+      extraConfig = cfg.samba.extraConfig;
     };
 
     networking.firewall = {
@@ -18,12 +19,12 @@ let
     };
 
     krb5 = {
-      enable = cfg.lan.krb5.enable;
+      enable = cfg.krb5.enable;
       libdefaults = {
-        default_realm = cfg.lan.krb5.default_realm;
+        default_realm = cfg.krb5.default_realm;
       };
-      domain_realm = cfg.lan.krb5.domain_realm;
-      realms = cfg.lan.krb5.realms;
+      domain_realm = cfg.krb5.domain_realm;
+      realms = cfg.krb5.realms;
     };
 
     # Ugly hack because of hard coded kernel path
@@ -61,7 +62,7 @@ let
   };
 in
   {
-    options.feature.lan = {
+    options.features.lan = {
       enable = mkEnableOption "Enable LAN configs";
 
       domain = mkOption {

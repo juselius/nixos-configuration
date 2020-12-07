@@ -1,10 +1,10 @@
-{ pkgs, config, ... }:
-with pkgs;
+{ pkgs, config, lib, ... }:
+with lib;
 let
-  cfg = config.feature.packages;
+  cfg = config.features.packages;
 
   configuration = {
-    system.environment.systemPackages = [
+    environment.systemPackages = with pkgs; [
       stdenv
       findutils
       coreutils
@@ -40,7 +40,7 @@ let
     ];
   };
 in {
-  options.feature.packages = {
+  options.features.packages = {
     enable = mkOption {
       type = types.bool;
       default = true;
