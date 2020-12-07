@@ -16,9 +16,10 @@
     search = [ "regnekraft.io" "itpartner.intern" "itpartner.no" ];
   };
 
-  facility = {
+  feature = {
     desktop.enable = false;
     lan.enable = false;
+    cachix.enable = false;
 
     os = {
       boot = {

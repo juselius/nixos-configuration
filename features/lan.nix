@@ -1,6 +1,6 @@
 { pkgs, config, ... }:
 let
-  cfg = config.facility.lan;
+  cfg = config.feature.lan;
 
   configuration = {
     services.cntlm.netbios_hostname = config.networking.hostName;
@@ -61,7 +61,7 @@ let
   };
 in
   {
-    options.facility.lan = {
+    options.feature.lan = {
       enable = mkEnableOption "Enable LAN configs";
 
       domain = mkOption {

@@ -1,7 +1,7 @@
 { pkgs, config, ... }:
 with pkgs;
 let
-  cfg = config.facility.packages;
+  cfg = config.feature.packages;
 
   configuration = {
     system.environment.systemPackages = [
@@ -40,7 +40,7 @@ let
     ];
   };
 in {
-  options.facility.packages = {
+  options.feature.packages = {
     enable = mkOption {
       type = types.bool;
       default = true;

@@ -1,7 +1,7 @@
 
 { config, pkgs, ... }:
 let
-  cfg = config.facility.base;
+  cfg = config.feature.base;
 
   configuration = {
     nixpkgs.overlays = [];
@@ -13,6 +13,12 @@ let
       };
       firewall.trustedInterfaces = [ "docker0" "cbr0" "veth+" ];
     };
+
+    users.extraUsers.admin.openssh.authorizedKeys.keys =
+      cfg.adminAuthorizedKeys;
+
+    users.extraUsers.root.openssh.authorizedKeys.keys =
+      cfg.adminAuthorizedKeys;
 
     console = {
       font = "Lat2-Terminus16";
@@ -80,7 +86,7 @@ let
   };
 in
 {
-  options.facility.os = {
+  options.feature.os = {
     networkmanager.enable = mkEnableOption "Enable NetworkManager";
 
     docker.enable = mkEnableOption "Enable Docker";
@@ -102,6 +108,12 @@ in
       default = null;
       description = "External interface (i.e. for Docker nat)";
     };
+
+    adminAuthorizedKeys = mkOption {
+      type = types.listOf types.str;
+      default = [];
+    };
+
   };
 
   config.base = mkMerge [ configuration ];

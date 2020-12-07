@@ -1,6 +1,6 @@
 { pkgs, cfg, ... }:
 let
-  cfg = config.facility.desktop;
+  cfg = config.feature.desktop;
 
   configuration = {
     hardware.bluetooth.enable = true;
@@ -67,7 +67,7 @@ let
   };
 in
 {
-  options.facility.desktop = {
+  options.feature.desktop = {
     desktop.enable = mkEnableOption "Enable desktop configs";
   };
 
