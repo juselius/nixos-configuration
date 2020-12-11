@@ -1,6 +1,8 @@
 { pkgs, config, lib, ... }:
 with lib;
 let
+  cfg = config.features.cachix;
+
   folder = ../cachix;
 
   toImport = name: value: folder + ("/" + name);
@@ -14,8 +16,6 @@ let
   configuration = {
     nix.binaryCaches = ["https://cache.nixos.org/"];
   };
-
-  cfg = config.features.cachix;
 in {
   options.features.cachix = {
     enable = mkOption {

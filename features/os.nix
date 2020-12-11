@@ -3,9 +3,17 @@ with lib;
 let
   cfg = config.features.os;
 
-  configuration = {
-    nixpkgs.overlays = [];
+  netConfig = {
+    networking.interfaces."${cfg.externalInterface}" = {
+      useDHCP = false;
+      ipv4.addresses = [ {
+        address = cfg.address;
+        prefixLength = 24;
+      } ];
+    };
+  };
 
+  configuration = {
     networking = {
       networkmanager = {
         enable = cfg.networkmanager.enable;
@@ -84,6 +92,33 @@ let
         else cfg.externalInterface;
     };
   };
+
+  mailRelay = {
+    services.ssmtp = {
+      enable = true;
+      useTLS = true;
+      root = cfg.mailRelay.adminEmail;
+      domain = cfg.mailRelay.mailDomain;
+      hostName = cfg.mailRelay.mailGateway;
+      authUser = cfg.mailRelay.mailAuthUser;
+      authPassFile = "/run/keys/ssmtp-authpass";
+    };
+  };
+
+  nfs = {
+    networking = {
+      firewall.allowedTCPPorts = [ 111 2049 ];
+      firewall.allowedUDPPorts = [ 111 2049 24007 24008 ];
+    };
+
+    environment.systemPackages = with pkgs; [ nfs-utils ];
+
+    services.nfs.server = {
+      enable = true;
+      exports = cfg.nfs.exports;
+    };
+  };
+
 in
 {
   options.features.os = {
@@ -99,8 +134,14 @@ in
 
     boot.device = mkOption {
       type = types.str;
-      default = null;
+      default = "/dev/sda";
       description = "Boot disk (e.g. /dev/sda) for GRUB2";
+    };
+
+    useDHCP = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Use DHCP";
     };
 
     externalInterface = mkOption {
@@ -109,24 +150,60 @@ in
       description = "External interface (i.e. for Docker nat)";
     };
 
+    address = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "IPv4 address if using static IP.";
+    };
+
     adminAuthorizedKeys = mkOption {
       type = types.listOf types.str;
       default = [];
     };
 
-    extraConfig = mkOption {
-      type = types.attrs;
-      default = {};
-      description = "Inject any other system configuration";
+    mailRelay = {
+      enable = mkEnableOption "Enable mail realy using ssmtp";
+
+      adminEmail = mkOption {
+        type = types.str;
+        default = "root";
+      };
+
+      mailDomain = mkOption {
+        type = types.str;
+        default = "local";
+      };
+
+      mailGateway = mkOption {
+        type = types.str;
+        default = "";
+      };
+
+      mailAuthUser = mkOption {
+        type = types.str;
+        default = "";
+      };
     };
 
+    nfs = {
+      enable = mkEnableOption "Enable nfs fileserver";
+
+      exports = mkOption {
+        type = types.str;
+        default = "";
+      };
+    };
   };
 
   config = mkMerge [
     configuration
 
+    (mkIf (! cfg.useDHCP) netConfig)
+
     (mkIf cfg.docker.enable docker)
 
-    cfg.extraConfig
+    (mkIf cfg.mailRelay.enable mailRelay)
+
+    (mkIf cfg.nfs.enable nfs)
   ];
 }
