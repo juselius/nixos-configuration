@@ -37,6 +37,7 @@ let
       fuse
       home-manager
       ssmtp
+      google-authenticator
     ];
   };
 in {
