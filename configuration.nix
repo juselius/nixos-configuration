@@ -15,6 +15,8 @@
     search = [ "local" ];
   };
 
+  security.pam.services.sshd.googleAuthenticator.enable = true;
+
   features = {
     desktop.enable = false;
     desktop.keybase.enable = false;
