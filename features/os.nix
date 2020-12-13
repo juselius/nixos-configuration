@@ -3,16 +3,6 @@ with lib;
 let
   cfg = config.features.os;
 
-  netConfig = {
-    networking.interfaces."${cfg.externalInterface}" = {
-      useDHCP = false;
-      ipv4.addresses = [ {
-        address = cfg.address;
-        prefixLength = 24;
-      } ];
-    };
-  };
-
   configuration = {
     networking = {
       networkmanager = {
@@ -138,22 +128,10 @@ in
       description = "Boot disk (e.g. /dev/sda) for GRUB2";
     };
 
-    useDHCP = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Use DHCP";
-    };
-
     externalInterface = mkOption {
       type = types.nullOr types.str;
       default = null;
       description = "External interface (i.e. for Docker nat)";
-    };
-
-    address = mkOption {
-      type = types.nullOr types.str;
-      default = null;
-      description = "IPv4 address if using static IP.";
     };
 
     adminAuthorizedKeys = mkOption {
@@ -197,8 +175,6 @@ in
 
   config = mkMerge [
     configuration
-
-    (mkIf (! cfg.useDHCP) netConfig)
 
     (mkIf cfg.docker.enable docker)
 
