@@ -1,6 +1,6 @@
 {
   imports = [
-    ./features
+    ./modules
     ./users.nix
     ./hosts.nix
     ./certificates.nix

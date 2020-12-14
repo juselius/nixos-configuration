@@ -1,14 +1,5 @@
 { pkgs, config, ...}:
 {
-  imports = [
-    ./features
-    ./users.nix
-    ./hosts.nix
-    ./kernel.nix
-    ./certificates.nix
-    ./hardware-configuration.nix
-  ];
-
   networking = {
     hostName = "nixos";
     domain = "local";
@@ -40,5 +31,12 @@
 
     lan.enable = false;
   };
+
+  imports = [
+    ./.
+    ./kernel.nix
+    ./hardware-configuration.nix
+  ];
+
 }
 
