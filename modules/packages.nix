@@ -12,6 +12,7 @@ let
       iputils
       nettools
       netcat
+      inetutils
       rsync
       iotop
       wget
