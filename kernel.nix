@@ -1,12 +1,11 @@
-{pkgs, stdenv, fetchurl, config, kernel ? null, ...}:
+{pkgs, stdenv, fetchurl, config, ...}:
 let
-  kernel = if kernel == null then config.system.build.kernel else kernel;
 in
   {
     nixpkgs.overlays = [];
 
     boot = {
       extraModulePackages = [];
-      kernelPackages = kernel;
+      # kernelPackages = pkgs.linuxPackages_5_9;
     };
   }
