@@ -38,7 +38,6 @@ let
     services.openssh.enable = true;
     services.gvfs.enable = true;
     services.fwupd.enable = true;
-    services.ntp.enable = true;
 
     security.sudo.extraConfig = ''
       Defaults env_keep+=SSH_AUTH_SOCK
@@ -49,6 +48,7 @@ let
     '';
 
     security.rtkit.enable = true;
+    security.pam.services.sshd.googleAuthenticator.enable = true;
 
     # $ ecryptfs-migrate-home -u <username>
     # security.pam.enableEcryptfs = true;
