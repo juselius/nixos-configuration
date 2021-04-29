@@ -21,7 +21,11 @@ let
 
     programs.dconf.enable = true;
 
+    security.pam.services.login.enableGnomeKeyring = true;
+
     services.dbus.enable = true;
+    services.dbus.packages = [ pkgs.gnome3.gnome-keyring pkgs.gcr ];
+
     services.printing.enable = true;
     services.printing.drivers = [ pkgs.hplip ];
 
