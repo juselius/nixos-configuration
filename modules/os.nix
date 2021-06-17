@@ -54,7 +54,7 @@ let
     # security.pam.enableEcryptfs = true;
 
     # The NixOS release to be compatible with for stateful data such as databases.
-    system.stateVersion = "20.09";
+    system.stateVersion = "21.05";
     system.autoUpgrade.enable = true;
     nixpkgs.config.allowUnfree = true;
 
