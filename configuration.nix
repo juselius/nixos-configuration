@@ -8,14 +8,35 @@
     firewall.extraCommands = '' '';
   };
 
-  # boot.initrd.luks.devices = {
-  #   luksroot = {
-  #     device = "/dev/sda1";
-  #     preLVM = true;
-  #     allowDiscards = true;
-  #   };
-  # };
-  # boot.loader.efi.canTouchEfiVariables = true;
+  boot = {
+    loader.systemd-boot.enable = true;
+    loader.efi.canTouchEfiVariables = true;
+    # initrd.luks.devices = {
+    #   luksroot = {
+    #     device = "/dev/sda1";
+    #     preLVM = true;
+    #     allowDiscards = true;
+    #   };
+    # };
+    loader.grub = {
+      enable = false;
+      version = 2;
+      device = "/dev/sda1";
+    };
+  };
+
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "us";
+  };
+  i18n = {
+    defaultLocale = "en_DK.UTF-8";
+    extraLocaleSettings = {
+      LC_TIME = "en_DK.UTF-8";
+    };
+  };
+
+  time.timeZone = "Europe/Oslo";
 
   features = {
     desktop.enable = false;
@@ -31,11 +52,6 @@
     };
 
     os = {
-      boot = {
-        uefi = true;
-        device = "/dev/sda1";
-      };
-
       networkmanager.enable = true;
       externalInterface = "eno2";
 
@@ -53,7 +69,7 @@
 
   programs.singularity.enable = false;
 
-  hardware.bluetooth.config = {
+  hardware.bluetooth.settings = {
     General = {
       AutoConnct = true;
       MultiProfile = "multiple";
