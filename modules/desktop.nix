@@ -26,6 +26,8 @@ let
     services.dbus.enable = true;
     services.dbus.packages = [ pkgs.gnome3.gnome-keyring pkgs.gcr ];
 
+    services.blueman.enable = true;
+
     services.printing.enable = true;
     services.printing.drivers = [ pkgs.hplip ];
 
