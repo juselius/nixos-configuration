@@ -31,6 +31,8 @@ let
     services.printing.enable = true;
     services.printing.drivers = [ pkgs.hplip ];
 
+    services.upower.enable = true;
+
     services.xserver.enable = true;
     services.xserver.enableCtrlAltBackspace = true;
     services.xserver.layout = "us";
@@ -38,11 +40,10 @@ let
     services.xserver.xkbOptions = "eurosign:e";
 
     services.xserver.displayManager.gdm.enable = true;
+    services.xserver.displayManager.gdm.wayland = cfg.wayland.enable;
     services.xserver.displayManager.job.logToFile = true;
     services.xserver.desktopManager.xterm.enable = true;
     services.xserver.wacom.enable = true;
-
-    services.upower.enable = true;
 
     fonts.fonts = with pkgs; [
       font-awesome
@@ -64,6 +65,12 @@ let
       noto-fonts-emoji
       material-icons
     ];
+
+    security.pam.services.swaylock = {
+      text = ''
+        auth include login
+      '';
+    };
   };
 
   keybase = {
@@ -80,6 +87,7 @@ in
   options.features.desktop = {
     enable = mkEnableOption "Enable desktop configs";
     keybase.enable = mkEnableOption "Enable Keybase";
+    wayland.enable = mkEnableOption "Enable Wayland";
   };
 
   config = mkMerge [
