@@ -40,10 +40,9 @@ let
     services.xserver.xkbOptions = "eurosign:e";
 
     services.xserver.displayManager.gdm.enable = true;
-    services.xserver.displayManager.gdm.wayland = cfg.wayland.enable;
     services.xserver.displayManager.job.logToFile = true;
-    services.xserver.desktopManager.xterm.enable = true;
     services.xserver.wacom.enable = true;
+    services.xserver.desktopManager.xterm.enable = true;
 
     fonts.fonts = with pkgs; [
       font-awesome
@@ -73,6 +72,11 @@ let
     };
   };
 
+  sway = {
+    services.xserver.displayManager.gdm.wayland = true;
+    programs.sway.enable = true;
+  };
+
   keybase = {
     services.keybase.enable = true;
     services.kbfs = {
@@ -92,6 +96,7 @@ in
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
+    (mkIf cfg.wayland.enable sway)
     (mkIf cfg.keybase.enable keybase)
   ];
 }
