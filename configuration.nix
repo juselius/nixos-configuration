@@ -38,10 +38,17 @@
 
   time.timeZone = "Europe/Oslo";
 
+  # services.xserver.videoDrivers = [ "displaylink" "modesetting" ];
+  # services.xserver.displayManager.sessionCommands = ''
+  #   # ${lib.getBin pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource 2 0
+  # '';
+
   features = {
-    desktop.enable = false;
-    desktop.keybase.enable = false;
-    cachix.enable = false;
+    desktop.enable = true;
+    laptop.enable = true;
+    desktop.wayland.enable = false;
+    desktop.keybase.enable = true;
+    cachix.enable = true;
 
     pki = {
       enable = false;
