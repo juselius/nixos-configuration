@@ -4,7 +4,7 @@ let
   cfg = config.features.laptop;
 
   hibernateEnvironment = {
-    HIBERNATE_SECONDS = "3600";
+    HIBERNATE_SECONDS = "10800";
     HIBERNATE_LOCK = "/var/run/autohibernate.lock";
   };
 
