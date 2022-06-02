@@ -7,7 +7,7 @@ let
     hardware.bluetooth.enable = true;
     hardware.pulseaudio = {
       enable = true;
-      extraModules = [ pkgs.pulseaudio-modules-bt ];
+      extraModules = [];
       extraConfig = ''
         load-module module-bluetooth-policy
         load-module module-bluetooth-discover
