@@ -76,27 +76,15 @@ let
     services.xserver.displayManager.gdm.wayland = true;
     programs.sway.enable = true;
   };
-
-  keybase = {
-    services.keybase.enable = true;
-    services.kbfs = {
-      enable = true;
-      extraFlags = [ "-label kbfs" ];
-      mountPoint = "%h/keybase";
-    };
-  };
-
 in
 {
   options.features.desktop = {
     enable = mkEnableOption "Enable desktop configs";
-    keybase.enable = mkEnableOption "Enable Keybase";
     wayland.enable = mkEnableOption "Enable Wayland";
   };
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
     (mkIf cfg.wayland.enable sway)
-    (mkIf cfg.keybase.enable keybase)
   ];
 }
