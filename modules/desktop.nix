@@ -7,7 +7,7 @@ let
     hardware.bluetooth.enable = true;
     hardware.pulseaudio = {
       enable = true;
-      extraModules = [ pkgs.pulseaudio-modules-bt ];
+      extraModules = [];
       extraConfig = ''
         load-module module-bluetooth-policy
         load-module module-bluetooth-discover
@@ -26,8 +26,12 @@ let
     services.dbus.enable = true;
     services.dbus.packages = [ pkgs.gnome3.gnome-keyring pkgs.gcr ];
 
+    services.blueman.enable = true;
+
     services.printing.enable = true;
     services.printing.drivers = [ pkgs.hplip ];
+
+    services.upower.enable = true;
 
     services.xserver.enable = true;
     services.xserver.enableCtrlAltBackspace = true;
@@ -37,10 +41,8 @@ let
 
     services.xserver.displayManager.gdm.enable = true;
     services.xserver.displayManager.job.logToFile = true;
-    services.xserver.desktopManager.xterm.enable = true;
     services.xserver.wacom.enable = true;
-
-    services.upower.enable = true;
+    services.xserver.desktopManager.xterm.enable = true;
 
     fonts.fonts = with pkgs; [
       font-awesome
@@ -62,6 +64,17 @@ let
       noto-fonts-emoji
       material-icons
     ];
+
+    security.pam.services.swaylock = {
+      text = ''
+        auth include login
+      '';
+    };
+  };
+
+  sway = {
+    services.xserver.displayManager.gdm.wayland = true;
+    programs.sway.enable = true;
   };
 
   keybase = {
@@ -78,10 +91,12 @@ in
   options.features.desktop = {
     enable = mkEnableOption "Enable desktop configs";
     keybase.enable = mkEnableOption "Enable Keybase";
+    wayland.enable = mkEnableOption "Enable Wayland";
   };
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
+    (mkIf cfg.wayland.enable sway)
     (mkIf cfg.keybase.enable keybase)
   ];
 }

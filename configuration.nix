@@ -30,18 +30,32 @@
     keyMap = "us";
   };
   i18n = {
-    defaultLocale = "en_DK.UTF-8";
+    defaultLocale = "en_US.UTF-8";
     extraLocaleSettings = {
-      LC_TIME = "en_DK.UTF-8";
+      LC_CTYPE="en_DK.UTF-8";
+      LC_TIME="en_DK.UTF-8";
+      LC_PAPER="en_DK.UTF-8";
+      LC_NAME="en_DK.UTF-8";
+      LC_ADDRESS="en_DK.UTF-8";
+      LC_TELEPHONE="en_DK.UTF-8";
+      LC_MEASUREMENT="en_DK.UTF-8";
+      LC_IDENTIFICATION="en_DK.UTF-8";
     };
   };
 
   time.timeZone = "Europe/Oslo";
 
+  # services.xserver.videoDrivers = [ "displaylink" "modesetting" ];
+  # services.xserver.displayManager.sessionCommands = ''
+  #   # ${lib.getBin pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource 2 0
+  # '';
+
   features = {
-    desktop.enable = false;
-    desktop.keybase.enable = false;
-    cachix.enable = false;
+    desktop.enable = true;
+    laptop.enable = true;
+    desktop.wayland.enable = false;
+    desktop.keybase.enable = true;
+    cachix.enable = true;
 
     pki = {
       enable = false;
@@ -94,6 +108,7 @@
   imports = [
     ./.
     ./kernel.nix
+    #"${builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }}/lenovo/thinkpad/x1/7th-gen"
     ./hardware-configuration.nix
   ];
 

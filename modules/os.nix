@@ -64,7 +64,6 @@ let
     };
   };
 
-
   nfs = {
     networking = {
       firewall.allowedTCPPorts = [ 111 2049 ];
@@ -96,7 +95,6 @@ in
       type = types.listOf types.str;
       default = [];
     };
-
 
     nfs = {
       enable = mkEnableOption "Enable nfs fileserver";
