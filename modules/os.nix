@@ -46,7 +46,7 @@ let
     nixpkgs.config.allowUnfree = true;
 
     boot = {
-      cleanTmpDir = true;
+      tmp.cleanOnBoot = true;
       initrd.checkJournalingFS = false;
     };
     nix = {
