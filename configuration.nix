@@ -20,7 +20,6 @@
     # };
     loader.grub = {
       enable = false;
-      version = 2;
       device = "/dev/sda1";
     };
   };
@@ -77,7 +76,10 @@
   };
 
   services.dnsmasq.enable = false;
-  services.dnsmasq.extraConfig = ''
+  services.dnsmasq.settings = {
+      address = [ "/.local/127.0.0.1" "/.local.oceanbox.io/127.0.0.1" ];
+      # addn-hosts = "/etc/hosts.adhoc";
+  };
     address=/.cluster.local/10.101.0.1
   '';
 
