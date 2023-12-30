@@ -39,7 +39,6 @@ in
     };
     loader.grub = {
       enable = false;
-      version = 2;
       device = "/dev/sda1";
     };
   };
@@ -73,8 +72,8 @@ in
     desktop.enable = true;
     laptop.enable = false;
     desktop.wayland.enable = false;
-    desktop.keybase.enable = true;
-    cachix.enable = true;
+    desktop.keybase.enable = false;
+    cachix.enable = false;
 
     pki = {
       enable = false;
@@ -124,10 +123,18 @@ in
     };
   };
 
+<<<<<<< HEAD
   services.dnsmasq.enable = true;
   services.dnsmasq.extraConfig = ''
     address=/.stokes.local/10.1.62.2
   '';
+=======
+  services.dnsmasq.enable = false;
+  services.dnsmasq.settings = {
+      address = [ "/.local/127.0.0.1" ];
+      # addn-hosts = "/etc/hosts.adhoc";
+  };
+>>>>>>> origin/main
 
   programs.singularity.enable = true;
 

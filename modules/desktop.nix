@@ -44,7 +44,7 @@ let
     services.xserver.wacom.enable = true;
     services.xserver.desktopManager.xterm.enable = true;
 
-    fonts.fonts = with pkgs; [
+    fonts.packages = with pkgs; [
       font-awesome
       caladea
       carlito
