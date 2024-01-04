@@ -50,11 +50,11 @@
   # '';
 
   features = {
-    desktop.enable = true;
-    laptop.enable = true;
+    desktop.enable = false;
+    laptop.enable = false;
     desktop.wayland.enable = false;
-    desktop.keybase.enable = true;
-    cachix.enable = true;
+    desktop.keybase.enable = false;
+    cachix.enable = false;
 
     pki = {
       enable = false;
@@ -77,11 +77,9 @@
 
   services.dnsmasq.enable = false;
   services.dnsmasq.settings = {
-      address = [ "/.local/127.0.0.1" "/.local.oceanbox.io/127.0.0.1" ];
+      address = [ "/.local/127.0.0.1" ];
       # addn-hosts = "/etc/hosts.adhoc";
   };
-    address=/.cluster.local/10.101.0.1
-  '';
 
   programs.singularity.enable = false;
 
