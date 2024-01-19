@@ -64,18 +64,6 @@ let
     };
   };
 
-  # mailRelay = {
-  #   services.msmtp = {
-  #     enable = true;
-  #     useTLS = true;
-  #     root = cfg.mailRelay.adminEmail;
-  #     domain = cfg.mailRelay.mailDomain;
-  #     hostName = cfg.mailRelay.mailGateway;
-  #     authUser = cfg.mailRelay.mailAuthUser;
-  #     authPassFile = "/run/keys/msmtp-authpass";
-  #   };
-  # };
-
   nfs = {
     networking = {
       firewall.allowedTCPPorts = [ 111 2049 ];
@@ -108,30 +96,6 @@ in
       default = [];
     };
 
-    # mailRelay = {
-    #   enable = mkEnableOption "Enable mail realy using ssmtp";
-
-    #   adminEmail = mkOption {
-    #     type = types.str;
-    #     default = "root";
-    #   };
-
-    #   mailDomain = mkOption {
-    #     type = types.str;
-    #     default = "local";
-    #   };
-
-    #   mailGateway = mkOption {
-    #     type = types.str;
-    #     default = "";
-    #   };
-
-    #   mailAuthUser = mkOption {
-    #     type = types.str;
-    #     default = "";
-    #   };
-    # };
-
     nfs = {
       enable = mkEnableOption "Enable nfs fileserver";
 
@@ -146,8 +110,6 @@ in
     configuration
 
     (mkIf cfg.docker.enable docker)
-
-    # (mkIf cfg.mailRelay.enable mailRelay)
 
     (mkIf cfg.nfs.enable nfs)
   ];
