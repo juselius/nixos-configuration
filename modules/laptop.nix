@@ -9,6 +9,8 @@ let
   };
 
   configuration = {
+    services.xserver.libinput.touchpad.disableWhileTyping = true;
+
     systemd.services."awake-after-suspend-for-a-time" = {
       description = "Sets up the suspend so that it'll wake for hibernation";
       wantedBy = [ "suspend.target" ];
@@ -22,6 +24,7 @@ let
       '';
       serviceConfig.Type = "simple";
     };
+
     systemd.services."hibernate-after-recovery" = {
       description = "Hibernates after a suspend recovery due to timeout";
       wantedBy = [ "suspend.target" ];
