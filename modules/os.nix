@@ -49,6 +49,13 @@ let
       tmp.cleanOnBoot = true;
       initrd.checkJournalingFS = false;
     };
+
+    nix = {
+        package = pkgs.nixFlakes;
+        extraOptions = ''
+          experimental-features = nix-command flakes impure-derivations
+        '';
+    };
   };
 
   docker = {
