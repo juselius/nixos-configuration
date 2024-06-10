@@ -18,13 +18,15 @@ let
       allowedUDPPorts = [ 137 138 ];
     };
 
-    krb5 = {
+    security.krb5 = {
       enable = cfg.krb5.enable;
-      libdefaults = {
-        default_realm = cfg.krb5.default_realm;
+      settings = {
+        libdefaults = {
+          default_realm = cfg.krb5.default_realm;
+        };
+        domain_realm = cfg.krb5.domain_realm;
+        realms = cfg.krb5.realms;
       };
-      domain_realm = cfg.krb5.domain_realm;
-      realms = cfg.krb5.realms;
     };
 
     # Ugly hack because of hard coded kernel path
