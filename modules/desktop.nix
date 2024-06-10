@@ -35,12 +35,14 @@ let
 
     services.xserver.enable = true;
     services.xserver.enableCtrlAltBackspace = true;
-    services.xserver.layout = "us";
-    services.xserver.xkbVariant = "altgr-intl";
-    services.xserver.xkbOptions = "eurosign:e";
+    services.xserver.xkb = {
+      layout = "us";
+      variant = "altgr-intl";
+      options = "eurosign:e";
+    };
 
+    services.displayManager.logToFile = true;
     services.xserver.displayManager.gdm.enable = true;
-    services.xserver.displayManager.job.logToFile = true;
     services.xserver.wacom.enable = true;
     services.xserver.desktopManager.xterm.enable = true;
 
