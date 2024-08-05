@@ -9,6 +9,8 @@ let
   };
 
   configuration = {
+    services.libinput.touchpad.disableWhileTyping = true;
+
     systemd.services."awake-after-suspend-for-a-time" = {
       description = "Sets up the suspend so that it'll wake for hibernation";
       wantedBy = [ "suspend.target" ];
