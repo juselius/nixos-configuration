@@ -24,6 +24,7 @@ let
       '';
       serviceConfig.Type = "simple";
     };
+
     systemd.services."hibernate-after-recovery" = {
       description = "Hibernates after a suspend recovery due to timeout";
       wantedBy = [ "suspend.target" ];
