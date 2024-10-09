@@ -54,6 +54,10 @@ let
         package = pkgs.nixFlakes;
         extraOptions = ''
           experimental-features = nix-command flakes impure-derivations
+          connect-timeout = 5
+          log-lines = 25
+          warn-dirty = false
+          fallback = true
         '';
     };
   };
