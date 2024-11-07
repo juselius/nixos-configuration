@@ -6,13 +6,43 @@ let
   configuration = {
     hardware.bluetooth.enable = true;
     hardware.pulseaudio = {
-      enable = true;
+      enable = false;
       extraModules = [];
       extraConfig = ''
         load-module module-bluetooth-policy
         load-module module-bluetooth-discover
       '';
     };
+    security.rtkit.enable = true;
+    services.pipewire = {
+      enable = true;
+      alsa = {
+        enable = true;
+        support32Bit = true;
+      };
+      pulse.enable = true;
+      wireplumber = {
+        enable = true;
+        # Need to generate lua config for bluetooth codecs
+        configPackages = [
+          (pkgs.writeTextDir "share/wireplumber/bluetooth.lua.d/51-bluez-config.lua" ''
+            bluez_monitor.properties = {
+              ["bluez5.enable-sbc-xq"] = true,
+              ["bluez5.enable-msbc"] = true,
+              ["bluez5.enable-hw-volume"] = true,
+              ["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
+            }
+          '')
+        ];
+      };
+      # TODO: Is this needed?
+      jack.enable = true;
+    };
+
+  environment.systemPackages = with pkgs; [
+    pamixer # pulseaudio sound mixer
+    pavucontrol # pulseaudio volume control
+  ];
 
     powerManagement = {
       enable = false;
@@ -42,7 +72,7 @@ let
     };
 
     services.displayManager.logToFile = true;
-    services.xserver.displayManager.gdm.enable = true;
+    services.xserver.displayManager.gdm.enable = ! cfg.wayland.enable;
     services.xserver.wacom.enable = true;
     services.xserver.desktopManager.xterm.enable = true;
 
@@ -65,6 +95,7 @@ let
       noto-fonts
       noto-fonts-emoji
       material-icons
+      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
     ];
 
     security.pam.services.swaylock = {
@@ -74,9 +105,12 @@ let
     };
   };
 
-  sway = {
-    services.xserver.displayManager.gdm.wayland = true;
+  wayland = {
+    # services.xserver.displayManager.gdm.wayland = true;
+    programs.regreet.enable = true;
     programs.sway.enable = true;
+    programs.hyprland.enable = true;
+    programs.river.enable = true;
   };
 
   keybase = {
@@ -98,7 +132,7 @@ in
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
-    (mkIf cfg.wayland.enable sway)
+    (mkIf cfg.wayland.enable wayland)
     (mkIf cfg.keybase.enable keybase)
   ];
 }
