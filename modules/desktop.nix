@@ -107,10 +107,24 @@ let
 
   wayland = {
     # services.xserver.displayManager.gdm.wayland = true;
-    programs.regreet.enable = true;
+    programs.regreet = {
+      enable = true;
+      settings = {
+        background = {
+           path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
+           fit = "Fill"; # Contain, Cover
+        };
+        GTK = {
+          application_prefer_dark_theme = false;
+        };
+        appearance = {
+          greeting_msg = "May the foo be with you.";
+        };
+    };
+    };
     programs.sway.enable = true;
-    programs.hyprland.enable = true;
-    programs.river.enable = true;
+    # programs.hyprland.enable = true;
+    # programs.river.enable = true;
   };
 
   keybase = {
