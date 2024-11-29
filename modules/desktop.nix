@@ -63,18 +63,10 @@ let
 
     services.upower.enable = true;
 
-    services.xserver.enable = true;
-    services.xserver.enableCtrlAltBackspace = true;
-    services.xserver.xkb = {
-      layout = "us";
-      variant = "altgr-intl";
-      options = "eurosign:e";
+    services.displayManager = {
+      enable = true;
+      logToFile = true;
     };
-
-    services.displayManager.logToFile = true;
-    services.xserver.displayManager.gdm.enable = ! cfg.wayland.enable;
-    services.xserver.wacom.enable = true;
-    services.xserver.desktopManager.xterm.enable = true;
 
     fonts.packages = with pkgs; [
       font-awesome
@@ -105,7 +97,26 @@ let
     };
   };
 
+  x11 = {
+    services.xserver = {
+      enable = true;
+      enableCtrlAltBackspace = true;
+      xkb = {
+        layout = "us";
+        variant = "altgr-intl";
+        options = "eurosign:e";
+      };
+
+      desktopManager.xterm.enable = true;
+      displayManager.gdm.enable = ! (cfg.wayland.enable);
+      wacom.enable = false;
+    };
+  };
+
   wayland = {
+    services.xserver.desktopManager.xterm.enable = true;
+
+    # services.xserver.displayManager.gdm.wayland = true;
     programs.regreet = {
       enable = true;
       cageArgs = [ "-s" "-m" "last" ];
@@ -127,6 +138,36 @@ let
     # programs.river.enable = true;
   };
 
+  hyprland = {
+    services.xserver.displayManager.gdm.enable = true;
+
+    environment.sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+    };
+
+    programs = {
+      hyprland = {
+        enable = true;
+      };
+
+      hyprlock = {
+        enable = true;
+      };
+
+      waybar = {
+        enable = true;
+      };
+    };
+
+    security = {
+      pam.services.hyprlock = {
+        text = ''
+          auth include login
+        '';
+      };
+    };
+  };
+
   keybase = {
     services.keybase.enable = true;
     services.kbfs = {
@@ -139,13 +180,17 @@ in
 {
   options.features.desktop = {
     enable = mkEnableOption "Enable desktop configs";
+    x11.enable = mkEnableOption "Enable X11";
     wayland.enable = mkEnableOption "Enable Wayland";
+    hyprland.enable = mkEnableOption "Enable Hyprland";
     keybase.enable = mkEnableOption "Enable Keybase";
   };
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
+    (mkIf cfg.x11.enable x11)
     (mkIf cfg.wayland.enable wayland)
+    (mkIf cfg.hyprland.enable hyprland)
     (mkIf cfg.keybase.enable keybase)
   ];
 }
