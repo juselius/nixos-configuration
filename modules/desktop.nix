@@ -108,6 +108,7 @@ let
   wayland = {
     programs.regreet = {
       enable = true;
+      cageArgs = [ "-s" "-m" "last" ];
       settings = {
         background = {
            path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
@@ -125,11 +126,21 @@ let
     # programs.hyprland.enable = true;
     # programs.river.enable = true;
   };
+
+  keybase = {
+    services.keybase.enable = true;
+    services.kbfs = {
+      enable = true;
+      extraFlags = [ "-label kbfs" ];
+      mountPoint = "%h/keybase";
+    };
+  };
 in
 {
   options.features.desktop = {
     enable = mkEnableOption "Enable desktop configs";
     wayland.enable = mkEnableOption "Enable Wayland";
+    keybase.enable = mkEnableOption "Enable Keybase";
   };
 
   config = mkMerge [
