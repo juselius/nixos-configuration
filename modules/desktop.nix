@@ -68,10 +68,6 @@ let
       logToFile = true;
     };
 
-    services.displayManager.logToFile = true;
-    services.xserver.displayManager.gdm.enable = ! (cfg.wayland.enable);
-    services.xserver.wacom.enable = true;
-
     fonts.packages = with pkgs; [
       font-awesome
       caladea
