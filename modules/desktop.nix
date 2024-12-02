@@ -54,7 +54,7 @@ let
     security.pam.services.login.enableGnomeKeyring = true;
 
     services.dbus.enable = true;
-    services.dbus.packages = [ pkgs.gnome3.gnome-keyring pkgs.gcr ];
+    services.dbus.packages = [ pkgs.gnome.gnome-keyring pkgs.gcr ];
 
     services.blueman.enable = true;
 
@@ -134,29 +134,18 @@ let
     };
     };
     programs.sway.enable = true;
-    # programs.hyprland.enable = true;
     # programs.river.enable = true;
   };
 
   hyprland = {
-    services.xserver.displayManager.gdm.enable = true;
-
     environment.sessionVariables = {
       NIXOS_OZONE_WL = "1";
     };
 
     programs = {
-      hyprland = {
-        enable = true;
-      };
-
-      hyprlock = {
-        enable = true;
-      };
-
-      waybar = {
-        enable = true;
-      };
+      hyprland.enable = true;
+      hyprlock.enable = true;
+      waybar.enable = true;
     };
 
     security = {
