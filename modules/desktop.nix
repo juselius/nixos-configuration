@@ -108,6 +108,8 @@ let
       };
 
       desktopManager.xterm.enable = true;
+      displayManager.gdm.enable = ! (cfg.wayland.enable);
+      wacom.enable = false;
     };
   };
 
@@ -117,6 +119,7 @@ let
     # services.xserver.displayManager.gdm.wayland = true;
     programs.regreet = {
       enable = true;
+      cageArgs = [ "-s" "-m" "last" ];
       settings = {
         background = {
            path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
@@ -162,7 +165,6 @@ let
       mountPoint = "%h/keybase";
     };
   };
-
 in
 {
   options.features.desktop = {
