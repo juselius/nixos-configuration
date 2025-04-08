@@ -9,7 +9,7 @@ let
   };
 
   configuration = {
-    services.xserver.libinput.touchpad.disableWhileTyping = true;
+    services.libinput.touchpad.disableWhileTyping = true;
 
     systemd.services."awake-after-suspend-for-a-time" = {
       description = "Sets up the suspend so that it'll wake for hibernation";

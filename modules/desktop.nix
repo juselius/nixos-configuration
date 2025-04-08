@@ -6,13 +6,43 @@ let
   configuration = {
     hardware.bluetooth.enable = true;
     hardware.pulseaudio = {
-      enable = true;
+      enable = false;
       extraModules = [];
       extraConfig = ''
         load-module module-bluetooth-policy
         load-module module-bluetooth-discover
       '';
     };
+    security.rtkit.enable = true;
+    services.pipewire = {
+      enable = true;
+      alsa = {
+        enable = true;
+        support32Bit = true;
+      };
+      pulse.enable = true;
+      wireplumber = {
+        enable = true;
+        # Need to generate lua config for bluetooth codecs
+        configPackages = [
+          (pkgs.writeTextDir "share/wireplumber/bluetooth.lua.d/51-bluez-config.lua" ''
+            bluez_monitor.properties = {
+              ["bluez5.enable-sbc-xq"] = true,
+              ["bluez5.enable-msbc"] = true,
+              ["bluez5.enable-hw-volume"] = true,
+              ["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
+            }
+          '')
+        ];
+      };
+      # TODO: Is this needed?
+      jack.enable = true;
+    };
+
+  environment.systemPackages = with pkgs; [
+    pamixer # pulseaudio sound mixer
+    pavucontrol # pulseaudio volume control
+  ];
 
     powerManagement = {
       enable = false;
@@ -24,7 +54,7 @@ let
     security.pam.services.login.enableGnomeKeyring = true;
 
     services.dbus.enable = true;
-    services.dbus.packages = [ pkgs.gnome3.gnome-keyring pkgs.gcr ];
+    services.dbus.packages = [ pkgs.gnome-keyring pkgs.gcr ];
 
     services.blueman.enable = true;
 
@@ -33,18 +63,10 @@ let
 
     services.upower.enable = true;
 
-    services.xserver.enable = true;
-    services.xserver.enableCtrlAltBackspace = true;
-    services.xserver.xkb = {
-      layout = "us";
-      variant = "altgr-intl";
-      options = "eurosign:e";
+    services.displayManager = {
+      enable = true;
+      logToFile = true;
     };
-
-    services.displayManager.logToFile = true;
-    services.xserver.displayManager.gdm.enable = true;
-    services.xserver.wacom.enable = true;
-    services.xserver.desktopManager.xterm.enable = true;
 
     fonts.packages = with pkgs; [
       font-awesome
@@ -65,6 +87,7 @@ let
       noto-fonts
       noto-fonts-emoji
       material-icons
+      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
     ];
 
     security.pam.services.swaylock = {
@@ -74,9 +97,64 @@ let
     };
   };
 
-  sway = {
-    services.xserver.displayManager.gdm.wayland = true;
+  x11 = {
+    services.xserver = {
+      enable = true;
+      enableCtrlAltBackspace = true;
+      xkb = {
+        layout = "us";
+        variant = "altgr-intl";
+        options = "eurosign:e";
+      };
+
+      desktopManager.xterm.enable = true;
+      displayManager.gdm.enable = ! (cfg.wayland.enable);
+      wacom.enable = false;
+    };
+  };
+
+  wayland = {
+    services.xserver.desktopManager.xterm.enable = true;
+
+    # services.xserver.displayManager.gdm.wayland = true;
+    programs.regreet = {
+      enable = true;
+      cageArgs = [ "-s" "-m" "last" ];
+      settings = {
+        background = {
+           path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
+           fit = "Fill"; # Contain, Cover
+        };
+        GTK = {
+          application_prefer_dark_theme = false;
+        };
+        appearance = {
+          greeting_msg = "May the foo be with you.";
+        };
+    };
+    };
     programs.sway.enable = true;
+    # programs.river.enable = true;
+  };
+
+  hyprland = {
+    environment.sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+    };
+
+    programs = {
+      hyprland.enable = true;
+      hyprlock.enable = true;
+      waybar.enable = true;
+    };
+
+    security = {
+      pam.services.hyprlock = {
+        text = ''
+          auth include login
+        '';
+      };
+    };
   };
 
   keybase = {
@@ -87,18 +165,21 @@ let
       mountPoint = "%h/keybase";
     };
   };
-
 in
 {
   options.features.desktop = {
     enable = mkEnableOption "Enable desktop configs";
-    keybase.enable = mkEnableOption "Enable Keybase";
+    x11.enable = mkEnableOption "Enable X11";
     wayland.enable = mkEnableOption "Enable Wayland";
+    hyprland.enable = mkEnableOption "Enable Hyprland";
+    keybase.enable = mkEnableOption "Enable Keybase";
   };
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
-    (mkIf cfg.wayland.enable sway)
+    (mkIf cfg.x11.enable x11)
+    (mkIf cfg.wayland.enable wayland)
+    (mkIf cfg.hyprland.enable hyprland)
     (mkIf cfg.keybase.enable keybase)
   ];
 }

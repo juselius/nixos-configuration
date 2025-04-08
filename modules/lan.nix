@@ -8,9 +8,8 @@ let
 
     services.samba = {
       enable = true;
-      enableNmbd = true;
+      nmbd.enable = true;
       nsswins = true;
-      extraConfig = cfg.samba.extraConfig;
     };
 
     networking.firewall = {
@@ -75,11 +74,6 @@ in
       domainSearch = mkOption {
         type = types.listOf types.str;
         default = [ cfg.lan.domain ];
-      };
-
-      samba.extraConfig = mkOption {
-        type = types.str;
-        default = "";
       };
 
       krb5 = {

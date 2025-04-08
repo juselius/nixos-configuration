@@ -1,4 +1,13 @@
 { pkgs, config, ...}:
+let
+    yubikey = {
+      slot = 2;
+      twoFactor = false;
+      storage = {
+        device = "/dev/nvme0n1p2";
+      };
+    };
+in
 {
   networking = {
     hostName = "nixos";
@@ -8,16 +17,65 @@
     firewall.extraCommands = '' '';
   };
 
+  features = {
+    desktop.enable = false;
+    laptop.enable = false;
+    desktop.wayland.enable = false;
+    desktop.keybase.enable = false;
+    cachix.enable = false;
+
+    pki = {
+      enable = false;
+      certmgr.enable = true;
+      certs = {
+        foo = { hosts = [ "localhost" ]; };
+      };
+    };
+
+    os = {
+      networkmanager.enable = true;
+      externalInterface = "eno2";
+
+      docker.enable = true;
+
+      adminAuthorizedKeys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKiAS30ZO+wgfAqDE9Y7VhRunn2QszPHA5voUwo+fGOf jonas-3"
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDULdlLC8ZLu9qBZUYsjhpr6kv5RH4yPkekXQdD7prkqapyoptUkO1nOTDwy7ZsKDxmp9Zc6OtdhgoJbowhGW3VIZPmooWO8twcaYDpkxEBLUehY/n8SlAwBtiHJ4mTLLcynJMVrjmTQLF3FeWVof0Aqy6UtZceFpLp1eNkiHTCM3anwtb9+gfr91dX1YsAOqxqv7ooRDu5rCRUvOi4OvRowepyuBcCjeWpTkJHkC9WGxuESvDV3CySWkGC2fF2LHkAu6SFsFE39UA5ZHo0b1TK+AFqRFiBAb7ULmtuno1yxhpBxbozf8+Yyc7yLfMNCyBpL1ci7WnjKkghQv7yM1xN2XMJLpF56v0slSKMoAs7ThoIlmkRm/6o3NCChgu0pkpNg/YP6A3HfYiEDgChvA6rAHX6+to50L9xF3ajqk4BUzWd/sCk7Q5Op2lzj31L53Ryg8vMP8hjDjYcgEcCCsGOcjUVgcsmfC9LupwRIEz3aF14AWg66+3zAxVho8ozjes= jonas.juselius@juselius.io"
+      ];
+    };
+
+    lan = {
+      enable = false;
+
+      krb5 = {
+        enable = false;
+        default_realm = "ACME";
+
+        domain_realm = {
+          "acme.com" = "ACME";
+        };
+
+        realms = {
+          "ACME" = {
+            admin_server = "dc.acme.com";
+            kdc = "dc.acme.com";
+          };
+        };
+      };
+    };
+  };
+
   boot = {
+    # initrd.luks.yubikeySupport = true;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
     # initrd.luks.devices = {
     #   luksroot = {
-    #     device = "/dev/sda1";
+    #     device = "/dev/disk/by-uuid/";
     #     preLVM = true;
     #     allowDiscards = true;
+    #     # inherit yubikey;
     #   };
-    # };
     loader.grub = {
       enable = false;
       device = "/dev/sda1";
@@ -49,39 +107,13 @@
   #   # ${lib.getBin pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource 2 0
   # '';
 
-  features = {
-    desktop.enable = false;
-    laptop.enable = false;
-    desktop.wayland.enable = false;
-    desktop.keybase.enable = false;
-    cachix.enable = false;
-
-    pki = {
-      enable = false;
-      certmgr.enable = true;
-      certs = {
-        foo = { hosts = [ "localhost" ]; };
-      };
-    };
-
-    os = {
-      networkmanager.enable = true;
-      externalInterface = "eno2";
-
-      docker.enable = true;
-
-      adminAuthorizedKeys = [
-      ];
-    };
-  };
-
   services.dnsmasq.enable = false;
   services.dnsmasq.settings = {
       address = [ "/.local/127.0.0.1" ];
       # addn-hosts = "/etc/hosts.adhoc";
   };
 
-  programs.singularity.enable = false;
+  programs.singularity.enable = true;
 
   hardware.bluetooth.settings = {
     General = {
@@ -95,7 +127,7 @@
   security.pam.yubico = {
     enable = false;
     mode = "client"; # "challenge-response";
-    id = "";
+    id = "12345";
     control = "sufficient";
   };
 

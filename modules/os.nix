@@ -19,6 +19,7 @@ let
       cfg.adminAuthorizedKeys;
 
     programs.vim.defaultEditor = true;
+    programs.vim.enable = true;
     programs.fish.enable = true;
     programs.tmux.enable = true;
 
@@ -51,9 +52,14 @@ let
     };
 
     nix = {
-        package = pkgs.nixFlakes;
+        #package = pkgs.nixVersions.stable;
+        package = pkgs.nixVersions.nix_2_23;
         extraOptions = ''
           experimental-features = nix-command flakes impure-derivations
+          connect-timeout = 5
+          log-lines = 25
+          warn-dirty = false
+          fallback = true
         '';
     };
   };
