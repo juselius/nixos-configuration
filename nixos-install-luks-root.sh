@@ -46,7 +46,7 @@ fi
 which git
 [ $? != 0 ] && nix-env -iA nixos.git
 [ ! -d /mnt/etc/nixos ] && git clone https://github.com/juselius/nixos-configuration.git /mnt/etc/nixos
-cp /mnt/etc/nixos/hardware-configuration.nix /mnt/etc/nixos/hardware-configuration.nix.bak
+[ -f /mnt/etc/nixos/hardware-configuration.nix ] && cp /mnt/etc/nixos/hardware-configuration.nix /mnt/etc/nixos/hardware-configuration.nix.bak
 nixos-generate-config --show-hardware-config > /mnt/etc/nixos/hardware-configuration.nix
 
 
