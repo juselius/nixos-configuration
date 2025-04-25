@@ -2,7 +2,7 @@ sys=/dev/nvme0n1
 root=${sys}p1
 boot=${sys}p2
 
-data=/dev/sda1
+# data=/dev/sda1
 
 parted $sys -- mklabel gpt
 
@@ -30,15 +30,17 @@ mount $boot /mnt/boot
 swapon /dev/vg0/swap
 
 # /data
-wipefs -a $data
-cryptsetup luksFormat $data
-cryptsetup open $data luks-data
+if [ -n "$data" ]; then
+    wipefs -a $data
+    cryptsetup luksFormat $data
+    cryptsetup open $data luks-data
 
-pvcreate /dev/mapper/luks-data
-vgcreate vg1 /dev/mapper/luks-data
-lvcreate -l '100%FREE' -n data vg1
+    pvcreate /dev/mapper/luks-data
+    vgcreate vg1 /dev/mapper/luks-data
+    lvcreate -l '100%FREE' -n data vg1
 
-mkfs.ext4 -L root /dev/vg1/data
+    mkfs.ext4 -L root /dev/vg1/data
+fi
 
 # install
 which git
