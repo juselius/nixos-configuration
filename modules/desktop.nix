@@ -5,7 +5,7 @@ let
 
   configuration = {
     hardware.bluetooth.enable = true;
-    hardware.pulseaudio = {
+    services.pulseaudio = {
       enable = false;
       extraModules = [];
       extraConfig = ''
@@ -87,7 +87,9 @@ let
       noto-fonts
       noto-fonts-emoji
       material-icons
-      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+      nerd-fonts.jetbrains-mono
+      nerd-fonts._0xproto
+      nerd-fonts.droid-sans-mono
     ];
 
     security.pam.services.swaylock = {

@@ -53,7 +53,7 @@ let
 
     nix = {
         #package = pkgs.nixVersions.stable;
-        package = pkgs.nixVersions.nix_2_23;
+        # package = pkgs.nixVersions.nix_2_23;
         extraOptions = ''
           experimental-features = nix-command flakes impure-derivations
           connect-timeout = 5
