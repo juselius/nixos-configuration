@@ -108,17 +108,17 @@ let
       };
 
       desktopManager.xterm.enable = true;
-      displayManager.gdm.enable = ! (cfg.wayland.enable);
+      displayManager.gdm.enable = !(cfg.wayland.enable);
       wacom.enable = false;
     };
   };
 
   wayland = {
     services.xserver.desktopManager.xterm.enable = true;
-
-    # services.xserver.displayManager.gdm.wayland = true;
+    services.xserver.displayManager.gdm.enable = true;
+    services.xserver.displayManager.gdm.wayland = true;
     programs.regreet = {
-      enable = true;
+      enable = false;
       cageArgs = [ "-s" "-m" "last" ];
       settings = {
         background = {
@@ -177,7 +177,7 @@ in
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
-    (mkIf cfg.x11.enable x11)
+    (mkIf (!cfg.wayland.enable) x11)
     (mkIf cfg.wayland.enable wayland)
     (mkIf cfg.hyprland.enable hyprland)
     (mkIf cfg.keybase.enable keybase)

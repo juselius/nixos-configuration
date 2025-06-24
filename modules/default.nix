@@ -2,6 +2,7 @@
   imports = [
     ./os.nix
     ./packages.nix
+    ./server.nix
     ./desktop.nix
     ./laptop.nix
     ./lan.nix
