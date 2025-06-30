@@ -11,19 +11,20 @@
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    initrd.luks.devices = {
-      luksroot = {
-        device = "/dev/nvme0n1p1";
-        preLVM = true;
-        allowDiscards = true;
-      };
-    };
+    # initrd.luks.devices = {
+    #   luksroot = {
+    #     device = "/dev/nvme0n1p1";
+    #     preLVM = true;
+    #     allowDiscards = true;
+    #   };
+    # };
   };
 
   console = {
     font = "Lat2-Terminus16";
     keyMap = "us";
   };
+
   i18n = {
     defaultLocale = "en_US.UTF-8";
     extraLocaleSettings = {
@@ -69,27 +70,6 @@
       # nfs.exports = ''
       #   /exports 10.1.1.0/24(insecure,ro,async,crossmnt,no_subtree_check,fsid=0,no_root_squash)
       # '';
-    };
-
-    lan = {
-      enable = false;
-
-      krb5 = {
-        enable = true;
-        default_realm = "OCEANBOX";
-
-        domain_realm = {
-          "oceanbox.io" = "OCEANBOX";
-          ".oceanbox.io" = "OCEANBOX";
-        };
-
-        realms = {
-          "OCEANBOX" = {
-            admin_server = "dc0.oceanbox.io";
-            kdc = "dc0.oceanbox.io";
-          };
-        };
-      };
     };
   };
 
