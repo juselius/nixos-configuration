@@ -179,9 +179,9 @@ in
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
-    (mkIf (!cfg.wayland.enable) x11)
-    (mkIf cfg.wayland.enable wayland)
-    (mkIf cfg.hyprland.enable hyprland)
-    (mkIf cfg.keybase.enable keybase)
+    (mkIf (cfg.enable && !cfg.wayland.enable) x11)
+    (mkIf (cfg.enable && cfg.wayland.enable) wayland)
+    (mkIf (cfg.enable && cfg.hyprland.enable) hyprland)
+    (mkIf (cfg.enable && cfg.keybase.enable) keybase)
   ];
 }
