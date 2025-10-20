@@ -18,6 +18,7 @@ let
       wget
       neovim-unwrapped
       unzip
+      unstable.helix
       zip
       bind
       file

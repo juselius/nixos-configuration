@@ -1,4 +1,10 @@
-{ pkgs, config, ...}:
+{
+  pkgs,
+  config,
+  ...
+}: let
+  sources = import ./npins;
+in
 {
   networking = {
     hostName = "nixos";
@@ -121,12 +127,26 @@
     ];
   };
 
+  # HACK: workaround for settings nixosModules without flakes
+  _module.args = {inherit sources;};
+
+  # remove nix-channel related tools & configs, we use system-wide npins instead.
+  # from https://piegames.de/dumps/pinning-nixos-with-npins-revisited
+  nix.channel.enable = false;
+  nix.nixPath = [
+    "nixpkgs=/etc/nixos/nixpkgs"
+  ];
+  environment.etc = {
+    "nixos/nixpkgs".source = builtins.storePath pkgs.path;
+  };
+
   imports = [
     ./.
     ./kernel.nix
     ./hardware-configuration.nix
+    # NOTE: to use with disko add a disko.nix
+    # examples: https://github.com/nix-community/disko/tree/master/example
+    # "${sources.disko}/module.nix"
     #"${builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }}/lenovo/thinkpad/x1/7th-gen"
   ];
-
 }
-
