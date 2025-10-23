@@ -78,10 +78,13 @@ let
   };
 
   nfs = {
-    networking = {
-      firewall.allowedTCPPorts = [ 111 2049 ];
-      firewall.allowedUDPPorts = [ 111 2049 24007 24008 ];
-    };
+    networking =
+      if cfg.nfs.openFirewall then
+        {
+          firewall.allowedTCPPorts = [ 111 2049 ];
+          firewall.allowedUDPPorts = [ 111 2049 24007 24008 ];
+        }
+      else {};
 
     environment.systemPackages = with pkgs; [ nfs-utils ];
 
@@ -116,6 +119,15 @@ in
         type = types.str;
         default = "";
       };
+
+      openFirewall = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether to open the required ports in the firewall.
+        '';
+      };
+
     };
   };
 

@@ -17,6 +17,7 @@ let
       iotop
       wget
       neovim-unwrapped
+      helix
       unzip
       zip
       bind
@@ -33,6 +34,7 @@ let
       nixos-container
       nix-prefetch-git
       cachix
+      attic-client
       cifs-utils
       keyutils
       fuse
