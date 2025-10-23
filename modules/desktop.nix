@@ -69,6 +69,9 @@ let
     };
 
     fonts.packages = with pkgs; [
+      ubuntu-sans
+      ubuntu-classic
+      vollkorn
       font-awesome
       caladea
       carlito
