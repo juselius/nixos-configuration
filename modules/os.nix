@@ -46,6 +46,16 @@ let
     system.autoUpgrade.enable = true;
     nixpkgs.config.allowUnfree = true;
 
+    # Enable system diffs.
+    system.activationScripts.system-diff = {
+    supportsDryActivation = true; # safe: only outputs to stdout
+    text = ''
+      if [ -e /run/current-system ]; then
+        PATH=$PATH:${pkgs.nix}/bin ${pkgs.nvd}/bin/nvd diff /run/current-system $systemConfig
+      fi
+    '';
+  };
+
     boot = {
       tmp.cleanOnBoot = true;
       initrd.checkJournalingFS = false;
