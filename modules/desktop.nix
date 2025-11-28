@@ -61,7 +61,7 @@ let
     services.printing.enable = true;
     services.printing.drivers = [ pkgs.hplip ];
 
-    services.upower.enable = true;
+    services.upower.enable = lib.mkDefault true;
 
     services.displayManager = {
       enable = true;
