@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.features.desktop;
@@ -7,7 +12,7 @@ let
     hardware.bluetooth.enable = true;
     services.pulseaudio = {
       enable = false;
-      extraModules = [];
+      extraModules = [ ];
       extraConfig = ''
         load-module module-bluetooth-policy
         load-module module-bluetooth-discover
@@ -39,10 +44,10 @@ let
       jack.enable = true;
     };
 
-  environment.systemPackages = with pkgs; [
-    pamixer # pulseaudio sound mixer
-    pavucontrol # pulseaudio volume control
-  ];
+    environment.systemPackages = with pkgs; [
+      pamixer # pulseaudio sound mixer
+      pavucontrol # pulseaudio volume control
+    ];
 
     powerManagement = {
       enable = false;
@@ -54,7 +59,10 @@ let
     security.pam.services.login.enableGnomeKeyring = true;
 
     services.dbus.enable = true;
-    services.dbus.packages = [ pkgs.gnome-keyring pkgs.gcr ];
+    services.dbus.packages = [
+      pkgs.gnome-keyring
+      pkgs.gcr
+    ];
 
     services.blueman.enable = true;
 
@@ -88,7 +96,7 @@ let
       siji
       tamsyn
       noto-fonts
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       material-icons
       nerd-fonts.jetbrains-mono
       nerd-fonts._0xproto
@@ -119,16 +127,20 @@ let
   };
 
   wayland = {
-    services.xserver.desktopManager.xterm.enable = true;
-    services.xserver.displayManager.gdm.enable = true;
-    services.xserver.displayManager.gdm.wayland = true;
+    # services.xserver.desktopManager.xterm.enable = true;
+    services.displayManager.gdm.enable = true;
+    services.displayManager.gdm.wayland = true;
     programs.regreet = {
       enable = false;
-      cageArgs = [ "-s" "-m" "last" ];
+      cageArgs = [
+        "-s"
+        "-m"
+        "last"
+      ];
       settings = {
         background = {
-           path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
-           fit = "Fill"; # Contain, Cover
+          path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
+          fit = "Fill"; # Contain, Cover
         };
         GTK = {
           application_prefer_dark_theme = false;
@@ -136,7 +148,7 @@ let
         appearance = {
           greeting_msg = "May the foo be with you.";
         };
-    };
+      };
     };
     programs.sway.enable = true;
     # programs.river.enable = true;
