@@ -43,7 +43,6 @@ let
 
     # The NixOS release to be compatible with for stateful data such as databases.
     system.stateVersion = "21.05";
-    system.autoUpgrade.enable = true;
     nixpkgs.config.allowUnfree = true;
 
     boot = {
