@@ -132,6 +132,15 @@ in
         type = types.str;
         default = "";
       };
+
+      openFirewall = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether to open the required ports in the firewall.
+        '';
+      };
+
     };
   };
 

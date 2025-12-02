@@ -69,7 +69,7 @@ let
     services.printing.enable = true;
     services.printing.drivers = [ pkgs.hplip ];
 
-    services.upower.enable = true;
+    services.upower.enable = lib.mkDefault true;
 
     services.displayManager = {
       enable = true;
@@ -154,6 +154,30 @@ let
     # programs.river.enable = true;
   };
 
+  plasma = {
+    services = {
+      blueman.enable = lib.mkForce false;
+
+      displayManager.sddm = {
+        enable = true;
+        wayland.enable = true;
+      };
+
+      desktopManager.plasma6 = {
+        enable = true;
+      };
+    };
+
+    environment.systemPackages = with pkgs; [
+      pinentry-qt
+      wl-clipboard
+    ];
+
+    environment.sessionVariables = {
+      MOZ_ENABLE_WAYLAND = "1";
+    };
+  };
+
   hyprland = {
     environment.sessionVariables = {
       NIXOS_OZONE_WL = "1";
@@ -190,13 +214,15 @@ in
     wayland.enable = mkEnableOption "Enable Wayland";
     hyprland.enable = mkEnableOption "Enable Hyprland";
     keybase.enable = mkEnableOption "Enable Keybase";
+    plasma.enable = mkEnableOption "Enable KDE Plasma 6";
   };
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
-    (mkIf (cfg.enable && !cfg.wayland.enable) x11)
+    (mkIf (cfg.enable && cfg.x11.enable) x11)
     (mkIf (cfg.enable && cfg.wayland.enable) wayland)
     (mkIf (cfg.enable && cfg.hyprland.enable) hyprland)
     (mkIf (cfg.enable && cfg.keybase.enable) keybase)
+    (mkIf (cfg.enable && cfg.plasma.enable) plasma)
   ];
 }
