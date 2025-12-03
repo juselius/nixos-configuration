@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.features.desktop;
@@ -7,7 +12,7 @@ let
     hardware.bluetooth.enable = true;
     services.pulseaudio = {
       enable = false;
-      extraModules = [];
+      extraModules = [ ];
       extraConfig = ''
         load-module module-bluetooth-policy
         load-module module-bluetooth-discover
@@ -39,10 +44,10 @@ let
       jack.enable = true;
     };
 
-  environment.systemPackages = with pkgs; [
-    pamixer # pulseaudio sound mixer
-    pavucontrol # pulseaudio volume control
-  ];
+    environment.systemPackages = with pkgs; [
+      pamixer # pulseaudio sound mixer
+      pavucontrol # pulseaudio volume control
+    ];
 
     powerManagement = {
       enable = false;
@@ -54,14 +59,17 @@ let
     security.pam.services.login.enableGnomeKeyring = true;
 
     services.dbus.enable = true;
-    services.dbus.packages = [ pkgs.gnome-keyring pkgs.gcr ];
+    services.dbus.packages = [
+      pkgs.gnome-keyring
+      pkgs.gcr
+    ];
 
     services.blueman.enable = true;
 
     services.printing.enable = true;
     services.printing.drivers = [ pkgs.hplip ];
 
-    services.upower.enable = true;
+    services.upower.enable = lib.mkDefault true;
 
     services.displayManager = {
       enable = true;
@@ -89,7 +97,7 @@ let
       siji
       tamsyn
       noto-fonts
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       material-icons
       nerd-fonts.jetbrains-mono
       nerd-fonts._0xproto
@@ -120,16 +128,20 @@ let
   };
 
   wayland = {
-    services.xserver.desktopManager.xterm.enable = true;
-    services.xserver.displayManager.gdm.enable = true;
-    services.xserver.displayManager.gdm.wayland = true;
+    # services.xserver.desktopManager.xterm.enable = true;
+    services.displayManager.gdm.enable = true;
+    services.displayManager.gdm.wayland = true;
     programs.regreet = {
       enable = false;
-      cageArgs = [ "-s" "-m" "last" ];
+      cageArgs = [
+        "-s"
+        "-m"
+        "last"
+      ];
       settings = {
         background = {
-           path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
-           fit = "Fill"; # Contain, Cover
+          path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
+          fit = "Fill"; # Contain, Cover
         };
         GTK = {
           application_prefer_dark_theme = false;
@@ -137,10 +149,34 @@ let
         appearance = {
           greeting_msg = "May the foo be with you.";
         };
-    };
+      };
     };
     programs.sway.enable = true;
     # programs.river.enable = true;
+  };
+
+  plasma = {
+    services = {
+      blueman.enable = lib.mkForce false;
+
+      displayManager.sddm = {
+        enable = true;
+        wayland.enable = true;
+      };
+
+      desktopManager.plasma6 = {
+        enable = true;
+      };
+    };
+
+    environment.systemPackages = with pkgs; [
+      pinentry-qt
+      wl-clipboard
+    ];
+
+    environment.sessionVariables = {
+      MOZ_ENABLE_WAYLAND = "1";
+    };
   };
 
   hyprland = {
@@ -179,13 +215,15 @@ in
     wayland.enable = mkEnableOption "Enable Wayland";
     hyprland.enable = mkEnableOption "Enable Hyprland";
     keybase.enable = mkEnableOption "Enable Keybase";
+    plasma.enable = mkEnableOption "Enable KDE Plasma 6";
   };
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
-    (mkIf (cfg.enable && !cfg.wayland.enable) x11)
+    (mkIf (cfg.enable && cfg.x11.enable) x11)
     (mkIf (cfg.enable && cfg.wayland.enable) wayland)
     (mkIf (cfg.enable && cfg.hyprland.enable) hyprland)
     (mkIf (cfg.enable && cfg.keybase.enable) keybase)
+    (mkIf (cfg.enable && cfg.plasma.enable) plasma)
   ];
 }

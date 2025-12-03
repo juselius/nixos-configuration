@@ -12,10 +12,13 @@ let
       nsswins = true;
     };
 
-    networking.firewall = {
-      allowedTCPPorts = [ 139 445 ];
-      allowedUDPPorts = [ 137 138 ];
-    };
+    networking.firewall =
+      if cfg.openFirewall then
+        {
+          allowedTCPPorts = [ 139 445 ];
+          allowedUDPPorts = [ 137 138 ];
+        }
+      else {};
 
     security.krb5 = {
       enable = cfg.krb5.enable;
@@ -69,6 +72,14 @@ in
       domain = mkOption {
         type = types.str;
         default = "";
+      };
+
+      openFirewall = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether to open the required ports in the firewall.
+        '';
       };
 
       domainSearch = mkOption {

@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 with lib;
 let
   cfg = config.features.os;
@@ -7,16 +12,21 @@ let
     networking = {
       networkmanager = {
         enable = cfg.networkmanager.enable;
-        unmanaged = [ "interface-name:veth*" "interface-name:docker*" ];
+        unmanaged = [
+          "interface-name:veth*"
+          "interface-name:docker*"
+        ];
       };
-      firewall.trustedInterfaces = [ "docker0" "cbr0" "veth+" ];
+      firewall.trustedInterfaces = [
+        "docker0"
+        "cbr0"
+        "veth+"
+      ];
     };
 
-    users.extraUsers.admin.openssh.authorizedKeys.keys =
-      cfg.adminAuthorizedKeys;
+    users.extraUsers.admin.openssh.authorizedKeys.keys = cfg.adminAuthorizedKeys;
 
-    users.extraUsers.root.openssh.authorizedKeys.keys =
-      cfg.adminAuthorizedKeys;
+    users.extraUsers.root.openssh.authorizedKeys.keys = cfg.adminAuthorizedKeys;
 
     programs.vim.defaultEditor = true;
     programs.vim.enable = true;
@@ -42,8 +52,8 @@ let
     # security.pam.enableEcryptfs = true;
 
     # The NixOS release to be compatible with for stateful data such as databases.
-    system.stateVersion = "21.05";
-    system.autoUpgrade.enable = true;
+    system.stateVersion = "25.11";
+    system.autoUpgrade.enable = false;
     nixpkgs.config.allowUnfree = true;
 
     boot = {
@@ -52,15 +62,15 @@ let
     };
 
     nix = {
-        #package = pkgs.nixVersions.stable;
-        # package = pkgs.nixVersions.nix_2_23;
-        extraOptions = ''
-          experimental-features = nix-command flakes impure-derivations
-          connect-timeout = 5
-          log-lines = 25
-          warn-dirty = false
-          fallback = true
-        '';
+      #package = pkgs.nixVersions.stable;
+      # package = pkgs.nixVersions.nix_2_23;
+      extraOptions = ''
+        experimental-features = nix-command flakes impure-derivations
+        connect-timeout = 5
+        log-lines = 25
+        warn-dirty = false
+        fallback = true
+      '';
     };
   };
 
@@ -70,17 +80,23 @@ let
     virtualisation.docker.extraOptions = "--insecure-registry 10.0.0.0/8";
     networking = {
       nat.enable = true;
-      nat.internalInterfaces = ["veth+"];
-      nat.externalInterface =
-        if cfg.externalInterface == null then []
-        else cfg.externalInterface;
+      nat.internalInterfaces = [ "veth+" ];
+      nat.externalInterface = if cfg.externalInterface == null then [ ] else cfg.externalInterface;
     };
   };
 
   nfs = {
     networking = {
-      firewall.allowedTCPPorts = [ 111 2049 ];
-      firewall.allowedUDPPorts = [ 111 2049 24007 24008 ];
+      firewall.allowedTCPPorts = [
+        111
+        2049
+      ];
+      firewall.allowedUDPPorts = [
+        111
+        2049
+        24007
+        24008
+      ];
     };
 
     environment.systemPackages = with pkgs; [ nfs-utils ];
@@ -106,7 +122,7 @@ in
 
     adminAuthorizedKeys = mkOption {
       type = types.listOf types.str;
-      default = [];
+      default = [ ];
     };
 
     nfs = {
@@ -116,6 +132,15 @@ in
         type = types.str;
         default = "";
       };
+
+      openFirewall = mkOption {
+        type = types.bool;
+        default = true;
+        description = ''
+          Whether to open the required ports in the firewall.
+        '';
+      };
+
     };
   };
 
