@@ -84,6 +84,7 @@ let
       fira-code-symbols
       dejavu_fonts
       powerline-fonts
+      powerline-symbols
       unifont
       siji
       tamsyn
