@@ -109,18 +109,18 @@ let
         auth include login
       '';
     };
+    services.xserver.xkb = lib.mkDefault {
+      layout = "us";
+      variant = "altgr-intl";
+      options = "eurosign:e";
+    };
+
   };
 
   x11 = {
     services.xserver = {
       enable = true;
       enableCtrlAltBackspace = true;
-      xkb = {
-        layout = "us";
-        variant = "altgr-intl";
-        options = "eurosign:e";
-      };
-
       desktopManager.xterm.enable = true;
       displayManager.gdm.enable = !(cfg.wayland.enable);
       wacom.enable = false;
