@@ -19,6 +19,7 @@ let
       neovim-unwrapped
       helix
       unzip
+      unstable.helix
       zip
       bind
       file
