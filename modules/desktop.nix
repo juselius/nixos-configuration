@@ -187,7 +187,7 @@ let
     programs = {
       hyprland.enable = true;
       hyprlock.enable = true;
-      waybar.enable = true;
+      waybar.enable = false;
     };
 
     security = {
