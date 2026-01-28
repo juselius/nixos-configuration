@@ -107,12 +107,47 @@ let
     };
   };
 
+  podman = {
+    virtualisation = {
+      podman = {
+        enable = true;
+        autoPrune.enable = true;
+        # Enable Docker compatibility socket
+        dockerCompat = true;
+        dockerSocket.enable = true;
+        defaultNetwork.settings.dns_enabled = true;
+      };
+
+      oci-containers.backend = "podman";
+
+      containers = {
+        storage.settings = {
+          storage.graphroot = "/var/lib/containers/storage";
+          storage.runroot = "/run/containers/storage";
+        };
+        containersConf.settings = {
+          # podman seems to not work with systemd-resolved
+          containers.dns_servers = [
+            "100.100.100.100"
+            "8.8.8.8"
+            "8.8.4.4"
+          ];
+        };
+      };
+    };
+
+    # without this, when podman changes, it will be restarted, which will kill the build
+    # in the middle of restarting services and leave things in a bad state.
+    systemd.services.podman.restartIfChanged = false;
+  };
+
 in
 {
   options.features.os = {
     networkmanager.enable = mkEnableOption "Enable NetworkManager";
 
     docker.enable = mkEnableOption "Enable Docker";
+    podman.enable = mkEnableOption "Enable Podman";
 
     externalInterface = mkOption {
       type = types.nullOr types.str;
@@ -146,9 +181,8 @@ in
 
   config = mkMerge [
     configuration
-
     (mkIf cfg.docker.enable docker)
-
+    (mkIf cfg.podman.enable podman)
     (mkIf cfg.nfs.enable nfs)
   ];
 }
