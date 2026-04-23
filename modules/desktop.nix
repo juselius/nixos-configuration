@@ -199,6 +199,28 @@ let
     };
   };
 
+  gnome = {
+    services = {
+      blueman.enable = lib.mkForce false;
+      desktopManager.gnome.enable = true;
+
+      displayManager.gdm = {
+        enable = lib.mkForce true;
+        wayland = true;
+      };
+    };
+
+    environment.systemPackages = with pkgs; [
+      gnome-tweaks
+      wl-clipboard
+      pinentry-gnome3
+    ];
+
+    environment.sessionVariables = {
+      MOZ_ENABLE_WAYLAND = "1";
+    };
+  };
+
   keybase = {
     services.keybase.enable = true;
     services.kbfs = {
@@ -216,6 +238,7 @@ in
     hyprland.enable = mkEnableOption "Enable Hyprland";
     keybase.enable = mkEnableOption "Enable Keybase";
     plasma.enable = mkEnableOption "Enable KDE Plasma 6";
+    gnome.enable = mkEnableOption "Enable GNOME";
   };
 
   config = mkMerge [
@@ -225,5 +248,6 @@ in
     (mkIf (cfg.enable && cfg.hyprland.enable) hyprland)
     (mkIf (cfg.enable && cfg.keybase.enable) keybase)
     (mkIf (cfg.enable && cfg.plasma.enable) plasma)
+    (mkIf (cfg.enable && cfg.gnome.enable) gnome)
   ];
 }
