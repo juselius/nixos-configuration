@@ -129,27 +129,30 @@ let
 
   wayland = {
     # services.xserver.desktopManager.xterm.enable = true;
-    services.displayManager.gdm.enable = true;
-    services.displayManager.gdm.wayland = true;
-    programs.regreet = {
-      enable = false;
-      cageArgs = [
-        "-s"
-        "-m"
-        "last"
-      ];
-      settings = {
-        background = {
-          path = "${pkgs.nixos-artwork.wallpapers.mosaic-blue}/share/backgrounds/nixos/nix-wallpaper-mosaic-blue.png";
-          fit = "Fill"; # Contain, Cover
+    services.displayManager.gdm.enable = false;
+    services.greetd = {
+      enable = true;
+      restart = false;
+      settings =
+        let
+          greeting = lib.escapeShellArg ''"There's always another secret."'';
+          command = lib.concatStringsSep " " [
+            "${lib.getExe pkgs.tuigreet}"
+            "--time"
+            "--remember"
+            "--remember-user-session"
+            "--greeting"
+            "${greeting}"
+            "--cmd"
+            "start-hyprland"
+          ];
+        in
+        {
+          default_session = {
+            inherit command;
+            user = "greeter";
+          };
         };
-        GTK = {
-          application_prefer_dark_theme = false;
-        };
-        appearance = {
-          greeting_msg = "May the foo be with you.";
-        };
-      };
     };
     programs.sway.enable = true;
     # programs.river.enable = true;
