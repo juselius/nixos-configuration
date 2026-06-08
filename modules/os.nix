@@ -64,6 +64,12 @@ let
     nix = {
       #package = pkgs.nixVersions.stable;
       # package = pkgs.nixVersions.nix_2_23;
+      settings = {
+        extra-substituters = [ "https://noctalia.cachix.org" ];
+        extra-trusted-public-keys = [
+          "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+        ];
+      };
       extraOptions = ''
         experimental-features = nix-command flakes impure-derivations
         connect-timeout = 5
