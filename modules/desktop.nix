@@ -144,7 +144,7 @@ let
             "--greeting"
             "${greeting}"
             "--cmd"
-            "start-hyprland"
+            "${pkgs.hyprland}/bin/start-hyprland"
           ];
         in
         {
