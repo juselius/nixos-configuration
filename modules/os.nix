@@ -74,9 +74,13 @@ let
         extra-trusted-public-keys = [
           "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
         ];
+        experimental-features = [
+          "nix-command"
+          "flakes"
+          "pipe-operators"
+        ];
       };
       extraOptions = ''
-        experimental-features = nix-command flakes impure-derivations
         connect-timeout = 5
         log-lines = 25
         warn-dirty = false
