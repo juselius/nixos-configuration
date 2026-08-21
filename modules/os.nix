@@ -52,7 +52,7 @@ let
     # security.pam.enableEcryptfs = true;
 
     # The NixOS release to be compatible with for stateful data such as databases.
-    system.stateVersion = "25.11";
+    system.stateVersion = "26.05";
     system.autoUpgrade.enable = false;
     nixpkgs.config.allowUnfree = true;
 
@@ -70,9 +70,13 @@ let
           "admin"
           "@wheel"
         ];
-        extra-substituters = [ "https://noctalia.cachix.org" ];
+        extra-substituters = [
+          "https://noctalia.cachix.org"
+          "https://cache.ekman.oceanbox.io"
+        ];
         extra-trusted-public-keys = [
           "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
+          "cache.ekman.oceanbox.io:6/BGHWtDYPmO4anGSzNgTzM7UWpvfNO6C9FYy6G0nUE="
         ];
         experimental-features = [
           "nix-command"
