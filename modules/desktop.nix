@@ -148,8 +148,8 @@ let
           corner_radius_scale = 1.0;
           font_family = "Inter";
           # wallpaper = {
-            # path = "";
-            # fill_mode = "crop";
+          # path = "";
+          # fill_mode = "crop";
           # };
         };
         idle.timeout = 300;
@@ -167,8 +167,6 @@ let
         auth.allow_empty_password = false;
       };
     };
-
-    programs.sway.enable = true;
     # programs.river.enable = true;
   };
 
