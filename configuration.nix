@@ -1,11 +1,14 @@
-{ pkgs, config, ...}:
+{ pkgs, config, ... }:
+let
+  sources = import ./npins;
+in
 {
   networking = {
     hostName = "nixos";
     domain = "oceanbox.io";
     search = [ "oceanbox.io" ];
     firewall.allowedTCPPorts = [ ];
-    firewall.extraCommands = '' '';
+    firewall.extraCommands = "";
   };
 
   boot = {
@@ -28,14 +31,14 @@
   i18n = {
     defaultLocale = "en_US.UTF-8";
     extraLocaleSettings = {
-      LC_CTYPE="en_DK.UTF-8";
-      LC_TIME="en_DK.UTF-8";
-      LC_PAPER="en_DK.UTF-8";
-      LC_NAME="en_DK.UTF-8";
-      LC_ADDRESS="en_DK.UTF-8";
-      LC_TELEPHONE="en_DK.UTF-8";
-      LC_MEASUREMENT="en_DK.UTF-8";
-      LC_IDENTIFICATION="en_DK.UTF-8";
+      LC_CTYPE = "en_DK.UTF-8";
+      LC_TIME = "en_DK.UTF-8";
+      LC_PAPER = "en_DK.UTF-8";
+      LC_NAME = "en_DK.UTF-8";
+      LC_ADDRESS = "en_DK.UTF-8";
+      LC_TELEPHONE = "en_DK.UTF-8";
+      LC_MEASUREMENT = "en_DK.UTF-8";
+      LC_IDENTIFICATION = "en_DK.UTF-8";
     };
   };
 
@@ -52,7 +55,9 @@
       enable = false;
       certmgr.enable = true;
       certs = {
-        foo = { hosts = [ "localhost" ]; };
+        foo = {
+          hosts = [ "localhost" ];
+        };
       };
     };
 
@@ -75,11 +80,11 @@
 
   services.dnsmasq.enable = false;
   services.dnsmasq.settings = {
-      address = [
-        "/.local/127.0.0.1"
-        "/.local.oceanbox.io/127.0.0.1"
-      ];
-      # addn-hosts = "/etc/hosts.adhoc";
+    address = [
+      "/.local/127.0.0.1"
+      "/.local.oceanbox.io/127.0.0.1"
+    ];
+    # addn-hosts = "/etc/hosts.adhoc";
   };
 
   programs.singularity.enable = false;
@@ -101,17 +106,17 @@
   };
 
   services.udev.extraRules = ''
-      ACTION=="remove",\
-      ENV{ID_BUS}=="usb",\
-      ENV{ID_MODEL_ID}=="0407",\
-      ENV{ID_VENDOR_ID}=="1050",\
-      ENV{ID_VENDOR}=="Yubico",\
-      RUN+="${pkgs.systemd}/bin/loginctl lock-sessions"
+    ACTION=="remove",\
+    ENV{ID_BUS}=="usb",\
+    ENV{ID_MODEL_ID}=="0407",\
+    ENV{ID_VENDOR_ID}=="1050",\
+    ENV{ID_VENDOR}=="Yubico",\
+    RUN+="${pkgs.systemd}/bin/loginctl lock-sessions"
   '';
 
   nixpkgs.config.allowUnfreee = true;
 
-  services.tailscale =  {
+  services.tailscale = {
     enable = true;
     useRoutingFeatures = "client";
     extraUpFlags = [
@@ -125,8 +130,8 @@
     ./.
     ./kernel.nix
     ./hardware-configuration.nix
+    (import "${sources.noctalia-greeter}/nix/nixos-module.nix")
     #"${builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }}/lenovo/thinkpad/x1/7th-gen"
   ];
 
 }
-
