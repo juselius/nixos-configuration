@@ -7,7 +7,7 @@
 with lib;
 let
   cfg = config.features.desktop;
-  sources = import ./npins;
+  sources = import ../npins;
 
   configuration = {
     hardware.bluetooth.enable = true;

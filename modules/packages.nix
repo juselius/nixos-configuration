@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.features.packages;
@@ -40,9 +45,11 @@ let
       fuse
       home-manager
       google-authenticator
+      nh
     ];
   };
-in {
+in
+{
   options.features.packages = {
     enable = mkOption {
       type = types.bool;
