@@ -1,0 +1,21 @@
+{
+  "pins": {
+    "noctalia-greeter": {
+      "type": "GitRelease",
+      "repository": {
+        "type": "GitHub",
+        "owner": "noctalia-dev",
+        "repo": "noctalia-greeter"
+      },
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "release_prefix": null,
+      "submodules": false,
+      "version": "v1.3.1",
+      "revision": "bcab0abf7be8dc0c7d40df83e16ef4e32ceb4196",
+      "url": "https://api.github.com/repos/noctalia-dev/noctalia-greeter/tarball/refs/tags/v1.3.1",
+      "hash": "sha256-1ZdtgBwndNHDltX8J7DLLl2/LBgywQhmt1JNcanfeMA="
+    }
+  },
+  "version": 8
+}

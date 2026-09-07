@@ -7,6 +7,7 @@
 with lib;
 let
   cfg = config.features.desktop;
+  sources = import ./npins;
 
   configuration = {
     hardware.bluetooth.enable = true;
@@ -130,30 +131,43 @@ let
   wayland = {
     # services.xserver.desktopManager.xterm.enable = true;
     services.displayManager.gdm.enable = false;
-    services.greetd = {
+
+    # TODO: Switch to upstream once its in stable
+    # https://github.com/NixOS/nixpkgs/pull/559940
+    programs.noctalia-greeter = {
       enable = true;
-      restart = false;
-      settings =
-        let
-          greeting = lib.escapeShellArg ''"There's always another secret."'';
-          command = lib.concatStringsSep " " [
-            "${lib.getExe pkgs.tuigreet}"
-            "--time"
-            "--remember"
-            "--remember-user-session"
-            "--greeting"
-            "${greeting}"
-            "--cmd"
-            "${pkgs.hyprland}/bin/start-hyprland"
-          ];
-        in
-        {
-          default_session = {
-            inherit command;
-            user = "greeter";
-          };
+      package = pkgs.callPackage "${sources.noctalia-greeter}/nix/package.nix" { };
+      settings = {
+        session.default = "Hyprland";
+        user.default = "";
+        appearance = {
+          scheme = "Synced";
+          password_style = "random";
+          hide_logo = true;
+          theme_mode = "dark";
+          corner_radius_scale = 1.0;
+          font_family = "Inter";
+          # wallpaper = {
+            # path = "";
+            # fill_mode = "crop";
+          # };
         };
+        idle.timeout = 300;
+        cursor = {
+          theme = "Bibata-Modern-Ice";
+          path = "${pkgs.bibata-cursors}/share/icons";
+          size = 24;
+        };
+        keyboard = {
+          layout = "us";
+          variant = "altgr-intl";
+          options = "caps:escape,grp:alt_shift_toggle,eurosign:e";
+          numlock = true;
+        };
+        auth.allow_empty_password = false;
+      };
     };
+
     programs.sway.enable = true;
     # programs.river.enable = true;
   };
