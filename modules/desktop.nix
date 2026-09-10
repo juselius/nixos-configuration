@@ -129,17 +129,41 @@ let
   };
 
   wayland = {
-    # services.xserver.desktopManager.xterm.enable = true;
-    services.displayManager.gdm.enable = false;
+    services = {
+      displayManager.gdm.enable = true;
+      greetd.settings.default_session.user = "greeter";
+    };
+
+    # users.extraUsers.greeter = {
+    #  extraGroups = [
+        # "seat"
+        # "video"
+        # "render"
+    #  ];
+    # };
+
+    systemd.services.greetd.serviceConfig = {
+      Type = "idle";
+      StandardInput = "tty";
+      StandardOutput = "tty";
+      StandardError = "journal"; # Without this errors will spam on screen
+      # Without these bootlogs will spam on screen
+      TTYReset = true;
+      TTYVHangup = true;
+      TTYVTDisallocate = true;
+    };
 
     # TODO: Switch to upstream once its in stable
     # https://github.com/NixOS/nixpkgs/pull/559940
     programs.noctalia-greeter = {
-      enable = true;
+      enable = false;
       package = pkgs.callPackage "${sources.noctalia-greeter}/nix/package.nix" { };
       settings = {
         session.default = "Hyprland";
-        user.default = "";
+        # user.default = "";
+        output = {
+          # name = "DP-1";
+        };
         appearance = {
           scheme = "Synced";
           password_style = "random";
