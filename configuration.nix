@@ -71,10 +71,6 @@ in
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKiAS30ZO+wgfAqDE9Y7VhRunn2QszPHA5voUwo+fGOf jonas-3"
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDULdlLC8ZLu9qBZUYsjhpr6kv5RH4yPkekXQdD7prkqapyoptUkO1nOTDwy7ZsKDxmp9Zc6OtdhgoJbowhGW3VIZPmooWO8twcaYDpkxEBLUehY/n8SlAwBtiHJ4mTLLcynJMVrjmTQLF3FeWVof0Aqy6UtZceFpLp1eNkiHTCM3anwtb9+gfr91dX1YsAOqxqv7ooRDu5rCRUvOi4OvRowepyuBcCjeWpTkJHkC9WGxuESvDV3CySWkGC2fF2LHkAu6SFsFE39UA5ZHo0b1TK+AFqRFiBAb7ULmtuno1yxhpBxbozf8+Yyc7yLfMNCyBpL1ci7WnjKkghQv7yM1xN2XMJLpF56v0slSKMoAs7ThoIlmkRm/6o3NCChgu0pkpNg/YP6A3HfYiEDgChvA6rAHX6+to50L9xF3ajqk4BUzWd/sCk7Q5Op2lzj31L53Ryg8vMP8hjDjYcgEcCCsGOcjUVgcsmfC9LupwRIEz3aF14AWg66+3zAxVho8ozjes= jonas.juselius@juselius.io"
       ];
-      nfs.enable = false;
-      # nfs.exports = ''
-      #   /exports 10.1.1.0/24(insecure,ro,async,crossmnt,no_subtree_check,fsid=0,no_root_squash)
-      # '';
     };
   };
 
@@ -88,6 +84,7 @@ in
   };
 
   programs.singularity.enable = false;
+  programs.nix-ld.enable = true;
 
   hardware.bluetooth.settings = {
     General = {
@@ -125,6 +122,23 @@ in
       "--accept-routes"
     ];
   };
+  services.networkd-dispatcher = {
+    enable = true;
+    rules = {
+      "tailscale-router" = {
+        onState = [ "routable" ];
+        script = ''
+          #!${pkgs.runtimeShell}
+          ${pkgs.ethtool}/bin/ethtool -K enp2s0f1 rx-udp-gro-forwarding on
+          ${pkgs.ethtool}/bin/ethtool -K enp2s0f1 rx-gro-list off
+          ${pkgs.ethtool}/bin/ethtool -K enp2s0f1 tx-udp-segmentation on
+          exit 0
+        '';
+      };
+    };
+  };
+
+  # programs.noctalia-greeter.settings.user.default = "";
 
   imports = [
     ./.

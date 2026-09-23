@@ -136,9 +136,9 @@ let
 
     # users.extraUsers.greeter = {
     #  extraGroups = [
-        # "seat"
-        # "video"
-        # "render"
+    # "seat"
+    # "video"
+    # "render"
     #  ];
     # };
 
@@ -159,7 +159,7 @@ let
       enable = false;
       package = pkgs.callPackage "${sources.noctalia-greeter}/nix/package.nix" { };
       settings = {
-        session.default = "Hyprland";
+        session.default = "Niri";
         # user.default = "";
         output = {
           # name = "DP-1";
@@ -218,12 +218,13 @@ let
     };
   };
 
-  hyprland = {
+  tiling = {
     environment.sessionVariables = {
       NIXOS_OZONE_WL = "1";
     };
 
     programs = {
+      niri.enable = true;
       hyprland.enable = true;
       hyprlock.enable = true;
       waybar.enable = false;
@@ -274,7 +275,7 @@ in
     enable = mkEnableOption "Enable desktop configs";
     x11.enable = mkEnableOption "Enable X11";
     wayland.enable = mkEnableOption "Enable Wayland";
-    hyprland.enable = mkEnableOption "Enable Hyprland";
+    tiling.enable = mkEnableOption "Enable tiling WM(s)";
     keybase.enable = mkEnableOption "Enable Keybase";
     plasma.enable = mkEnableOption "Enable KDE Plasma 6";
     gnome.enable = mkEnableOption "Enable GNOME";
@@ -284,7 +285,7 @@ in
     (mkIf cfg.enable configuration)
     (mkIf (cfg.enable && cfg.x11.enable) x11)
     (mkIf (cfg.enable && cfg.wayland.enable) wayland)
-    (mkIf (cfg.enable && cfg.hyprland.enable) hyprland)
+    (mkIf (cfg.enable && cfg.tiling.enable) tiling)
     (mkIf (cfg.enable && cfg.keybase.enable) keybase)
     (mkIf (cfg.enable && cfg.plasma.enable) plasma)
     (mkIf (cfg.enable && cfg.gnome.enable) gnome)
