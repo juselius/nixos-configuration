@@ -118,20 +118,15 @@ let
 
   };
 
-  x11 = {
-    services.xserver = {
-      enable = true;
-      enableCtrlAltBackspace = true;
-      desktopManager.xterm.enable = true;
-      displayManager.gdm.enable = !(cfg.wayland.enable);
-      wacom.enable = false;
-    };
-  };
-
   wayland = {
     services = {
       displayManager.gdm.enable = true;
       greetd.settings.default_session.user = "greeter";
+    };
+
+    environment.sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+      MOZ_ENABLE_WAYLAND = "1";
     };
 
     # users.extraUsers.greeter = {
@@ -153,44 +148,6 @@ let
       TTYVTDisallocate = true;
     };
 
-    # TODO: Switch to upstream once its in stable
-    # https://github.com/NixOS/nixpkgs/pull/559940
-    programs.noctalia-greeter = {
-      enable = false;
-      package = pkgs.callPackage "${sources.noctalia-greeter}/nix/package.nix" { };
-      settings = {
-        session.default = "Niri";
-        # user.default = "";
-        output = {
-          # name = "DP-1";
-        };
-        appearance = {
-          scheme = "Synced";
-          password_style = "random";
-          hide_logo = true;
-          theme_mode = "dark";
-          corner_radius_scale = 1.0;
-          font_family = "Inter";
-          # wallpaper = {
-          # path = "";
-          # fill_mode = "crop";
-          # };
-        };
-        idle.timeout = 300;
-        cursor = {
-          theme = "Bibata-Modern-Ice";
-          path = "${pkgs.bibata-cursors}/share/icons";
-          size = 24;
-        };
-        keyboard = {
-          layout = "us";
-          variant = "altgr-intl";
-          options = "caps:escape,grp:alt_shift_toggle,eurosign:e";
-          numlock = true;
-        };
-        auth.allow_empty_password = false;
-      };
-    };
     # programs.river.enable = true;
   };
 
@@ -212,17 +169,9 @@ let
       pinentry-qt
       wl-clipboard
     ];
-
-    environment.sessionVariables = {
-      MOZ_ENABLE_WAYLAND = "1";
-    };
   };
 
   tiling = {
-    environment.sessionVariables = {
-      NIXOS_OZONE_WL = "1";
-    };
-
     programs = {
       niri.enable = true;
       hyprland.enable = true;
@@ -255,10 +204,6 @@ let
       wl-clipboard
       pinentry-gnome3
     ];
-
-    environment.sessionVariables = {
-      MOZ_ENABLE_WAYLAND = "1";
-    };
   };
 
   keybase = {
@@ -273,7 +218,6 @@ in
 {
   options.features.desktop = {
     enable = mkEnableOption "Enable desktop configs";
-    x11.enable = mkEnableOption "Enable X11";
     wayland.enable = mkEnableOption "Enable Wayland";
     tiling.enable = mkEnableOption "Enable tiling WM(s)";
     keybase.enable = mkEnableOption "Enable Keybase";
@@ -283,7 +227,6 @@ in
 
   config = mkMerge [
     (mkIf cfg.enable configuration)
-    (mkIf (cfg.enable && cfg.x11.enable) x11)
     (mkIf (cfg.enable && cfg.wayland.enable) wayland)
     (mkIf (cfg.enable && cfg.tiling.enable) tiling)
     (mkIf (cfg.enable && cfg.keybase.enable) keybase)
