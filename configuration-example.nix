@@ -48,7 +48,7 @@ in
     desktop.enable = false;
     laptop.enable = false;
     desktop.wayland.enable = false;
-    desktop.hyprland.enable = false;
+    desktop.tiling.enable = false;
     cachix.enable = false;
 
     pki = {
@@ -114,7 +114,7 @@ in
   nixpkgs.config.allowUnfreee = true;
 
   services.tailscale = {
-    enable = true;
+    enable = false;
     useRoutingFeatures = "client";
     extraUpFlags = [
       "--login-server=https://headscale.svc.oceanbox.io"
@@ -123,7 +123,7 @@ in
     ];
   };
   services.networkd-dispatcher = {
-    enable = true;
+    enable = false;
     rules = {
       "tailscale-router" = {
         onState = [ "routable" ];
@@ -138,13 +138,10 @@ in
     };
   };
 
-  # programs.noctalia-greeter.settings.user.default = "";
-
   imports = [
     ./.
     ./kernel.nix
     ./hardware-configuration.nix
-    (import "${sources.noctalia-greeter}/nix/nixos-module.nix")
     #"${builtins.fetchGit { url = "https://github.com/NixOS/nixos-hardware.git"; }}/lenovo/thinkpad/x1/7th-gen"
   ];
 
