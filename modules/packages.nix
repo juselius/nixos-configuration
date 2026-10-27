@@ -19,6 +19,7 @@ let
       netcat
       inetutils
       rsync
+      rclone
       iotop
       wget
       neovim-unwrapped
